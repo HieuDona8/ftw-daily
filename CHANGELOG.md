@@ -14,6 +14,9 @@ way to update this template, but currently, we follow a pattern:
 
 ## Upcoming version 2020-XX-XX
 
+- [fix] enforce upper case for currency and improve error message for it.
+  [#1417](https://github.com/sharetribe/ftw-daily/pull/1417)
+
 ## [v8.0.0] 2021-02-17
 
 This major release adds support for code-splitting using
