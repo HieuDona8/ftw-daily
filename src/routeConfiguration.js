@@ -15,6 +15,7 @@ const AuthenticationPage = loadable(() => import(/* webpackChunkName: "Authentic
 const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" */ './containers/CheckoutPage/CheckoutPage'));
 const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDetailsPage" */ './containers/ContactDetailsPage/ContactDetailsPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ './containers/EditListingPage/EditListingPage'));
+const EditListingTeacherPage = loadable(() => import(/* webpackChunkName: "EditListingTeacherPage" */ './containers/EditListingTeacherPage/EditListingTeacherPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ './containers/EmailVerificationPage/EmailVerificationPage'));
 const InboxPage = loadable(() => import(/* webpackChunkName: "InboxPage" */ './containers/InboxPage/InboxPage'));
 const LandingPage = loadable(() => import(/* webpackChunkName: "LandingPage" */ './containers/LandingPage/LandingPage'));
@@ -125,6 +126,32 @@ const routeConfiguration = () => {
       component: EditListingPage,
       loadData: pageDataLoadingAPI.EditListingPage.loadData,
     },
+
+    {
+      path: '/t/new',
+      name: 'NewListingTeacherPage',
+      auth: true,
+      component: () => {
+        return <NamedRedirect
+          name="EditListingTeacherPage"
+          params={{ slug: draftSlug, id: draftId, type: 'new', tab: 'general' }}
+        />
+      }
+    },
+    {
+      path: '/t/:slug/:id/:type/:tab',
+      name: 'EditListingTeacherPage',
+      auth: true,
+      component: EditListingTeacherPage,
+      loadData: pageDataLoadingAPI.EditListingTeacherPage.loadData,
+    },
+    // {
+    //   path: '/t/:slug/:id/:type/:tab/:returnURLType',
+    //   name: 'EditListingStripeOnboardingPage',
+    //   auth: true,
+    //   component: EditListingTeacherPage,
+    //   loadData: pageDataLoadingAPI.EditListingTeacherPage.loadData,
+    // },
 
     // Canonical path should be after the `/l/new` path since they
     // conflict and `new` is not a valid listing UUID.
