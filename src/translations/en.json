@@ -184,6 +184,15 @@
   "EditListingDescriptionForm.updateFailed": "Failed to update listing. Please try again.",
   "EditListingDescriptionPanel.createListingTitle": "Add your sauna",
   "EditListingDescriptionPanel.title": "Edit details of {listingTitle}",
+  "EditListingGeneralForm.name": "The name of Teacher",
+  "EditListingGeneralForm.namePlaceholder": "What the name of teacher?",
+  "EditListingGeneralForm.nameRequired": "You need to add a name",
+  "EditListingGeneralForm.maxLength": "Must be {maxLength} characters or less",
+  "EditListingGeneralForm.bioTitle": "Your bio",
+  "EditListingGeneralForm.bioPlaceholder": "What the bio of teacher",
+  "EditListingGeneralForm.bioRequired": "You need to add a bio",
+  
+
   "EditListingGeneralPanel.createListingTitle": "Add teacher",
   "EditListingGeneralPanel.title": "Edit details of {listingTitle}",
   "EditListingFeaturesForm.showListingFailed": "Fetching listing data failed",

@@ -41,6 +41,8 @@ const EditListingGeneralPanel = props => {
   );
 
   const categoryOptions = findOptionsForSelectFilter('category', config.custom.filters);
+  const lableSubject = "Your subjects";
+
   return (
     <div className={classes}>
       <h1 className={css.title}>{panelTitle}</h1>

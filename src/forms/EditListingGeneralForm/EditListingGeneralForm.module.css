@@ -27,11 +27,11 @@
   }
 }
 
-.title {
+.name {
   composes: formMargins;
 }
 
-.description {
+.bio {
   composes: formMargins;
   flex-shrink: 0;
 }
@@ -49,5 +49,13 @@
     display: inline-block;
     width: 241px;
     margin-top: 100px;
+  }
+}
+
+.features {
+  margin-bottom: 24px;
+
+  @media (--viewportMedium) {
+    margin-bottom: 32px;
   }
 }

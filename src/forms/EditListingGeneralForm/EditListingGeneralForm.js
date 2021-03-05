@@ -6,16 +6,22 @@ import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
 import { maxLength, required, composeValidators } from '../../util/validators';
-import { Form, Button, FieldTextInput } from '../../components';
+import { Form, Button, FieldTextInput, FieldCheckboxGroup } from '../../components';
 import CustomCategorySelectFieldMaybe from './CustomCategorySelectFieldMaybe';
+import config from '../../config';
+import { findOptionsForSelectFilter } from '../../util/search';
+import arrayMutators from 'final-form-arrays';
 
 import css from './EditListingGeneralForm.module.css';
 
 const TITLE_MAX_LENGTH = 60;
+const FEATURES_NAME_SUBJECTS = 'subjects';
+const FEATURES_NAME_LEVELS = 'levels';
 
 const EditListingGeneralFormComponent = props => (
   <FinalForm
     {...props}
+    mutators={{ ...arrayMutators }}
     render={formRenderProps => {
       const {
         categories,
@@ -30,14 +36,19 @@ const EditListingGeneralFormComponent = props => (
         updated,
         updateInProgress,
         fetchErrors,
+        filterConfig,
+        nameSubjects,
+        nameLevels,
+        lableSubject,
+        lableLevel 
       } = formRenderProps;
 
-      const titleMessage = intl.formatMessage({ id: 'EditListingGeneralForm.title' });
-      const titlePlaceholderMessage = intl.formatMessage({
-        id: 'EditListingGeneralForm.titlePlaceholder',
+      const nameMessage = intl.formatMessage({ id: 'EditListingGeneralForm.name' });
+      const namePlaceholderMessage = intl.formatMessage({
+        id: 'EditListingGeneralForm.namePlaceholder',
       });
-      const titleRequiredMessage = intl.formatMessage({
-        id: 'EditListingGeneralForm.titleRequired',
+      const nameRequiredMessage = intl.formatMessage({
+        id: 'EditListingGeneralForm.nameRequired',
       });
       const maxLengthMessage = intl.formatMessage(
         { id: 'EditListingGeneralForm.maxLength' },
@@ -46,15 +57,15 @@ const EditListingGeneralFormComponent = props => (
         }
       );
 
-      const descriptionMessage = intl.formatMessage({
-        id: 'EditListingGeneralForm.description',
+      const bioTitleMessage = intl.formatMessage({
+        id: 'EditListingGeneralForm.bioTitle',
       });
-      const descriptionPlaceholderMessage = intl.formatMessage({
-        id: 'EditListingGeneralForm.descriptionPlaceholder',
+      const bioPlaceholderMessage = intl.formatMessage({
+        id: 'EditListingGeneralForm.bioPlaceholder',
       });
       const maxLength60Message = maxLength(maxLengthMessage, TITLE_MAX_LENGTH);
-      const descriptionRequiredMessage = intl.formatMessage({
-        id: 'EditListingGeneralForm.descriptionRequired',
+      const bioRequiredMessage = intl.formatMessage({
+        id: 'EditListingGeneralForm.bioRequired',
       });
 
       const { updateListingError, createListingDraftError, showListingsError } = fetchErrors || {};
@@ -77,6 +88,9 @@ const EditListingGeneralFormComponent = props => (
         </p>
       ) : null;
 
+      const optionSubjects = findOptionsForSelectFilter('subjects', filterConfig);
+      const optionLevels = findOptionsForSelectFilter('levels', filterConfig);
+
       const classes = classNames(css.root, className);
       const submitReady = (updated && pristine) || ready;
       const submitInProgress = updateInProgress;
@@ -87,27 +101,32 @@ const EditListingGeneralFormComponent = props => (
           {errorMessageCreateListingDraft}
           {errorMessageUpdateListing}
           {errorMessageShowListing}
+
           <FieldTextInput
-            id="title"
-            name="title"
-            className={css.title}
+            id="name"
+            name="name"
+            className={css.name}
             type="text"
-            label={titleMessage}
-            placeholder={titlePlaceholderMessage}
+            label={nameMessage}
+            placeholder={namePlaceholderMessage}
             maxLength={TITLE_MAX_LENGTH}
-            validate={composeValidators(required(titleRequiredMessage), maxLength60Message)}
+            validate={composeValidators(required(nameRequiredMessage), maxLength60Message)}
             autoFocus
           />
 
           <FieldTextInput
-            id="description"
-            name="description"
-            className={css.description}
+            id="bio"
+            name="bio"
+            className={css.bio}
             type="textarea"
-            label={descriptionMessage}
-            placeholder={descriptionPlaceholderMessage}
-            validate={composeValidators(required(descriptionRequiredMessage))}
+            label={bioTitleMessage}
+            placeholder={bioPlaceholderMessage}
+            validate={composeValidators(required(bioRequiredMessage))}
           />
+
+          <FieldCheckboxGroup className={css.features} id={nameSubjects} label={lableSubject} name={nameSubjects} options={optionSubjects} />
+          <FieldCheckboxGroup className={css.features} id={nameLevels} label={lableLevel} name={nameLevels} options={optionLevels} />
+
 
           <CustomCategorySelectFieldMaybe
             id="category"
@@ -131,7 +150,15 @@ const EditListingGeneralFormComponent = props => (
   />
 );
 
-EditListingGeneralFormComponent.defaultProps = { className: null, fetchErrors: null };
+EditListingGeneralFormComponent.defaultProps = { 
+  className: null, 
+  fetchErrors: null,
+  filterConfig: config.custom.filters,
+  nameSubjects: "subject",
+  nameLevels: 'levels',
+  lableSubject: 'Your subject',
+  lableLevel: 'Levels, you can teach'
+};
 
 EditListingGeneralFormComponent.propTypes = {
   className: string,
@@ -153,6 +180,7 @@ EditListingGeneralFormComponent.propTypes = {
       label: string.isRequired,
     })
   ),
+  filterConfig: propTypes.filterConfig,
 };
 
 export default compose(injectIntl)(EditListingGeneralFormComponent);
