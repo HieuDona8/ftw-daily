@@ -295,7 +295,7 @@ EditListingTeacherPageComponent.propTypes = {
 
 const mapStateToProps = state => {
   // config state in teacher page
-  const page = state.EditListingPage;
+  const page = state.EditListingTeacherPage;
   const {
     getAccountLinkInProgress,
     getAccountLinkError,

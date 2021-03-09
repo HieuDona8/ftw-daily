@@ -1,12 +1,12 @@
 import React from 'react';
-import { arrayOf, bool, func, shape, string } from 'prop-types';
+import { arrayOf, bool, func, object, shape, string } from 'prop-types';
 import { compose } from 'redux';
 import { Form as FinalForm } from 'react-final-form';
 import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
 import { maxLength, required, composeValidators } from '../../util/validators';
-import { Form, Button, FieldTextInput, FieldCheckboxGroup } from '../../components';
+import { Form, Button, FieldTextInput, FieldCheckboxGroup, FieldRadioButton } from '../../components';
 import CustomCategorySelectFieldMaybe from './CustomCategorySelectFieldMaybe';
 import config from '../../config';
 import { findOptionsForSelectFilter } from '../../util/search';
@@ -24,7 +24,6 @@ const EditListingGeneralFormComponent = props => (
     mutators={{ ...arrayMutators }}
     render={formRenderProps => {
       const {
-        categories,
         className,
         disabled,
         ready,
@@ -37,19 +36,9 @@ const EditListingGeneralFormComponent = props => (
         updateInProgress,
         fetchErrors,
         filterConfig,
-        nameSubjects,
-        nameLevels,
-        lableSubject,
-        lableLevel 
+        infoForm
       } = formRenderProps;
 
-      const nameMessage = intl.formatMessage({ id: 'EditListingGeneralForm.name' });
-      const namePlaceholderMessage = intl.formatMessage({
-        id: 'EditListingGeneralForm.namePlaceholder',
-      });
-      const nameRequiredMessage = intl.formatMessage({
-        id: 'EditListingGeneralForm.nameRequired',
-      });
       const maxLengthMessage = intl.formatMessage(
         { id: 'EditListingGeneralForm.maxLength' },
         {
@@ -57,17 +46,7 @@ const EditListingGeneralFormComponent = props => (
         }
       );
 
-      const bioTitleMessage = intl.formatMessage({
-        id: 'EditListingGeneralForm.bioTitle',
-      });
-      const bioPlaceholderMessage = intl.formatMessage({
-        id: 'EditListingGeneralForm.bioPlaceholder',
-      });
       const maxLength60Message = maxLength(maxLengthMessage, TITLE_MAX_LENGTH);
-      const bioRequiredMessage = intl.formatMessage({
-        id: 'EditListingGeneralForm.bioRequired',
-      });
-
       const { updateListingError, createListingDraftError, showListingsError } = fetchErrors || {};
       const errorMessageUpdateListing = updateListingError ? (
         <p className={css.error}>
@@ -95,7 +74,7 @@ const EditListingGeneralFormComponent = props => (
       const submitReady = (updated && pristine) || ready;
       const submitInProgress = updateInProgress;
       const submitDisabled = invalid || disabled || submitInProgress;
-
+      
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           {errorMessageCreateListingDraft}
@@ -103,36 +82,68 @@ const EditListingGeneralFormComponent = props => (
           {errorMessageShowListing}
 
           <FieldTextInput
-            id="name"
-            name="name"
+            id={infoForm.name.name}
+            name={infoForm.name.name}
             className={css.name}
             type="text"
-            label={nameMessage}
-            placeholder={namePlaceholderMessage}
+            label={infoForm.name.label}
+            placeholder={infoForm.name.placeholder}
             maxLength={TITLE_MAX_LENGTH}
-            validate={composeValidators(required(nameRequiredMessage), maxLength60Message)}
+            validate={composeValidators(required(infoForm.name.requiredMessage), maxLength60Message)}
             autoFocus
           />
 
           <FieldTextInput
-            id="bio"
-            name="bio"
+            id={infoForm.bio.name}
+            name={infoForm.bio.name}
             className={css.bio}
             type="textarea"
-            label={bioTitleMessage}
-            placeholder={bioPlaceholderMessage}
-            validate={composeValidators(required(bioRequiredMessage))}
+            label={infoForm.bio.label}
+            placeholder={infoForm.bio.placeholder}
+            validate={composeValidators(required(infoForm.bio.requiredMessage))}
           />
 
-          <FieldCheckboxGroup className={css.features} id={nameSubjects} label={lableSubject} name={nameSubjects} options={optionSubjects} />
-          <FieldCheckboxGroup className={css.features} id={nameLevels} label={lableLevel} name={nameLevels} options={optionLevels} />
+          <FieldCheckboxGroup  
+            id={infoForm.subjects.name} 
+            label={infoForm.subjects.label} 
+            name={infoForm.subjects.name} 
+            className={css.features}
+            options={optionSubjects} 
+          />
 
+          <FieldCheckboxGroup 
+            className={css.features} 
+            id={infoForm.levels.name} 
+            label={infoForm.levels.label} 
+            name={infoForm.levels.name} 
+            options={optionLevels} 
+          />
 
-          <CustomCategorySelectFieldMaybe
-            id="category"
-            name="category"
-            categories={categories}
-            intl={intl}
+          <div>
+            <label>Teaching hours</label>
+            <FieldRadioButton
+              id={`${infoForm.time1.name}+'1'`}
+              name={infoForm.time1.name}
+              label={infoForm.time1.label}
+              value={infoForm.time1.value}
+              //showAsRequired={showAsRequired}
+            />
+            <FieldRadioButton
+              id={`${infoForm.time0.name}+'0'`}
+              name={infoForm.time0.name}
+              label={infoForm.time0.label}
+              value={infoForm.time0.value}
+              //showAsRequired={showAsRequired}
+            />
+          </div>
+          
+          <FieldTextInput
+            className={css.field}
+            type={infoForm.numberHour.type}
+            id={infoForm.numberHour.name}
+            name={infoForm.numberHour.name}
+            label={infoForm.numberHour.label}
+            // validate={required}
           />
 
           <Button
@@ -154,10 +165,6 @@ EditListingGeneralFormComponent.defaultProps = {
   className: null, 
   fetchErrors: null,
   filterConfig: config.custom.filters,
-  nameSubjects: "subject",
-  nameLevels: 'levels',
-  lableSubject: 'Your subject',
-  lableLevel: 'Levels, you can teach'
 };
 
 EditListingGeneralFormComponent.propTypes = {
@@ -181,6 +188,7 @@ EditListingGeneralFormComponent.propTypes = {
     })
   ),
   filterConfig: propTypes.filterConfig,
+  infoForm: object.isRequired
 };
 
 export default compose(injectIntl)(EditListingGeneralFormComponent);

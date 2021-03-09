@@ -1,13 +1,14 @@
 import React from 'react';
 import { bool, func, object, string } from 'prop-types';
 import classNames from 'classnames';
-import { FormattedMessage } from '../../util/reactIntl';
+import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
 import { ensureOwnListing } from '../../util/data';
 import { findOptionsForSelectFilter } from '../../util/search';
 import { LISTING_STATE_DRAFT } from '../../util/types';
 import { ListingLink } from '../../components';
 import { EditListingGeneralForm } from '../../forms';
 import config from '../../config';
+import { compose } from 'redux';
 
 import css from './EditListingGeneralPanel.module.css';
 
@@ -24,6 +25,7 @@ const EditListingGeneralPanel = props => {
     panelUpdated,
     updateInProgress,
     errors,
+    intl
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
@@ -41,23 +43,60 @@ const EditListingGeneralPanel = props => {
   );
 
   const categoryOptions = findOptionsForSelectFilter('category', config.custom.filters);
-  const lableSubject = "Your subjects";
+  
+  const infoForm = {
+    name: {
+      name: 'name',
+      label: intl.formatMessage({ id: 'EditListingGeneralForm.name' }),
+      placeholder: intl.formatMessage({id: 'EditListingGeneralForm.namePlaceholder',}),
+      requiredMessage: intl.formatMessage({id: 'EditListingGeneralForm.nameRequired'})
+    },
+    bio: {
+      name: 'bio',
+      label: intl.formatMessage({id: 'EditListingGeneralForm.bioTitle'}),
+      placeholder: intl.formatMessage({id: 'EditListingGeneralForm.bioPlaceholder'}),
+      requiredMessage: intl.formatMessage({id: 'EditListingGeneralForm.bioRequired'})
+    },
+    subjects: {
+      name: 'subject',
+      label: 'Your subject'
+    },
+    levels: {
+      name: 'levels',
+      label: 'Levels, you can teach'
+    },
+    time1: {
+      name: 'time-type',
+      label: "Full time",
+      value: '1'
+    },
+    time0: {
+      name: 'time-type',
+      label: "Part time",
+      value: '0'
+    },
+    numberHour: {
+      name: 'time-teaching',
+      label: "Custom time teaching",
+      type: "number"
+    }
+  }
 
   return (
     <div className={classes}>
       <h1 className={css.title}>{panelTitle}</h1>
       <EditListingGeneralForm
         className={css.form}
-        initialValues={{ title, description, category: publicData.category }}
+        infoForm={infoForm}
+        //initialValues={{ name: publicData.name, bio: publicData.bio, : publicData.category }}
         saveActionMsg={submitButtonText}
         onSubmit={values => {
-          const { title, description, category } = values;
+          const { name: title, bio: description, ...general } = values;
           const updateValues = {
             title: title.trim(),
             description,
-            publicData: { category },
+            publicData: { general },
           };
-
           onSubmit(updateValues);
         }}
         onChange={onChange}
@@ -85,7 +124,7 @@ EditListingGeneralPanel.propTypes = {
 
   // We cannot use propTypes.listing since the listing might be a draft.
   listing: object,
-
+  intl: intlShape.isRequired,
   disabled: bool.isRequired,
   ready: bool.isRequired,
   onSubmit: func.isRequired,
@@ -96,4 +135,4 @@ EditListingGeneralPanel.propTypes = {
   errors: object.isRequired,
 };
 
-export default EditListingGeneralPanel;
+export default compose(injectIntl)(EditListingGeneralPanel);
