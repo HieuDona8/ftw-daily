@@ -8,7 +8,7 @@ import { loadData as EditListingTeacherPageLoader } from './EditListingTeacherPa
 import { loadData as EmailVerificationPageLoader } from './EmailVerificationPage/EmailVerificationPage.duck';
 import { loadData as InboxPageLoader } from './InboxPage/InboxPage.duck';
 import { loadData as ListingPageLoader } from './ListingPage/ListingPage.duck';
-import { loadData as ListingTeacherPageLoader } from './ListingPage/ListingPage.duck';
+import { loadData as ListingTeacherPageLoader } from './ListingTeacherPage/ListingTeacherPage.duck';
 import { loadData as ManageListingsPageLoader } from './ManageListingsPage/ManageListingsPage.duck';
 import { loadData as PaymentMethodsPageLoader } from './PaymentMethodsPage/PaymentMethodsPage.duck';
 import { loadData as ProfilePageLoader } from './ProfilePage/ProfilePage.duck';

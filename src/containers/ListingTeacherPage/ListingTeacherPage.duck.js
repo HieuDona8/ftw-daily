@@ -320,13 +320,9 @@ export const loadData = (params, search) => dispatch => {
     return dispatch(showListing(listingId, true));
   }
 
-  if (config.enableAvailability) {
-    return Promise.all([
-      dispatch(showListing(listingId)),
-      dispatch(fetchTimeSlots(listingId)),
-      dispatch(fetchReviews(listingId)),
-    ]);
-  } else {
-    return Promise.all([dispatch(showListing(listingId)), dispatch(fetchReviews(listingId))]);
-  }
+  return Promise.all([
+    dispatch(showListing(listingId)),
+    dispatch(fetchTimeSlots(listingId)),
+    dispatch(fetchReviews(listingId)),
+  ]);
 };

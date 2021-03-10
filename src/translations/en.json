@@ -418,6 +418,8 @@
   "ListingTeacherPage.generalLevels": "Levels",
   "ListingTeacherPage.generalSubjects": "Subjects",
   "ListingTeacherPage.generalTeaching": "Time teaching",
+  "ListingTeacherPage.ownListing": "This is your own listing",
+  "ListingTeacherPage.editListing": "Edit listing",
   "LocationAutocompleteInput.currentLocation": "Current location",
   "LocationSearchForm.placeholder": "Search saunas…",
   "LoginForm.emailInvalid": "A valid email address is required",
