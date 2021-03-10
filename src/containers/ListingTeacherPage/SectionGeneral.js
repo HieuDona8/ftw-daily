@@ -10,8 +10,6 @@ const MIN_LENGTH_FOR_LONG_WORDS_IN_DESCRIPTION = 20;
 const SectionGeneral = props => {
   const { description, generalService } = props;
 
-  console.log("show: ", generalService.data["time-teaching"])
-
   return (
     <div>
       <div className={css.sectionDescription}>

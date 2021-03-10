@@ -67,6 +67,17 @@ export const maxLength = (message, maximumLength) => value => {
   return hasLength && value.length <= maximumLength ? VALID : message;
 };
 
+export const minValue = (message, min) => value => {
+  return value && Number(value) >= min ? VALID : message;
+};
+
+export const maxValue = (message, max) => value => {
+  if (!value) {
+    return VALID;
+  }
+  return value && Number(value) <= max ? VALID : message;
+};
+
 export const nonEmptyArray = message => value => {
   return value && Array.isArray(value) && value.length > 0 ? VALID : message;
 };

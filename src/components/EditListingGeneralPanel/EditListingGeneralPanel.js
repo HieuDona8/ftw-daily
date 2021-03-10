@@ -30,7 +30,8 @@ const EditListingGeneralPanel = props => {
 
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
-  const { description, title, publicData } = currentListing.attributes;
+  const {publicData} = currentListing.attributes || {};
+  const typeListing = 'teacher';
 
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
   const panelTitle = isPublished ? (
@@ -59,26 +60,36 @@ const EditListingGeneralPanel = props => {
     },
     subjects: {
       name: 'subject',
-      label: 'Your subject'
+      label: 'Your subject',
+      requiredMessage: intl.formatMessage({id: 'EditListingGeneralForm.subjectsRequired'})
     },
     levels: {
       name: 'levels',
-      label: 'Levels, you can teach'
+      label: 'Levels, you can teach',
+      requiredMessage: intl.formatMessage({id: 'EditListingGeneralForm.levelsRequired'})
     },
-    time1: {
-      name: 'time-type',
+    timeFull: {
+      name: 'timeType',
       label: "Full time",
-      value: '1'
+      value: 'full',
+      requiredMessage: intl.formatMessage({id: 'EditListingGeneralForm.typeTimeRequired'}),
     },
-    time0: {
-      name: 'time-type',
+    timePart: {
+      name: 'timeType',
       label: "Part time",
-      value: '0'
+      value: 'part',
+      requiredMessage: intl.formatMessage({id: 'EditListingGeneralForm.typeTimeRequired'}),
     },
     numberHour: {
-      name: 'time-teaching',
+      name: 'numberHour',
       label: "Custom time teaching",
-      type: "number"
+      type: "number",
+      maxValue: 8,
+      minValue: 1,
+      requiredMessage: intl.formatMessage({id: 'EditListingGeneralForm.hourRequired'}),
+      maxMessage: intl.formatMessage({id: 'EditListingGeneralForm.hourMax'},  {time: 8}),
+      minMessage: intl.formatMessage({id: 'EditListingGeneralForm.hourMin'}, {time: 1}),
+      value: 8
     }
   }
 
@@ -88,14 +99,24 @@ const EditListingGeneralPanel = props => {
       <EditListingGeneralForm
         className={css.form}
         infoForm={infoForm}
-        //initialValues={{ name: publicData.name, bio: publicData.bio, : publicData.category }}
+        initialValues={publicData.general ? { 
+          [infoForm.name.name]: currentListing.attributes.title, 
+          [infoForm.bio.name]: currentListing.attributes.description,
+          [infoForm.subjects.name]: publicData.general.subject,
+          [infoForm.levels.name]: publicData.general.levels,
+          [infoForm.timeFull.name]: publicData.general.timeType,
+          [infoForm.numberHour.name]: publicData.general.numberHour,
+        }: {}}
         saveActionMsg={submitButtonText}
         onSubmit={values => {
           const { name: title, bio: description, ...general } = values;
           const updateValues = {
             title: title.trim(),
             description,
-            publicData: { general },
+            publicData: { 
+              general,
+              type: typeListing
+            },
           };
           onSubmit(updateValues);
         }}
