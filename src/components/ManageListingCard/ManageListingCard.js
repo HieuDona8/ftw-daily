@@ -135,6 +135,8 @@ export const ManageListingCardComponent = props => {
   const isDraft = state === LISTING_STATE_DRAFT;
   const firstImage =
     currentListing.images && currentListing.images.length > 0 ? currentListing.images[0] : null;
+  const [typePage, typeTab] = listing.attributes.publicData.type && listing.attributes.publicData.type === 'teacher' ? 
+  ['EditListingTeacherPage','general'] : ['EditListingPage','description']
 
   const menuItemClasses = classNames(css.menuItem, {
     [css.menuItemDisabled]: !!actionsInProgressListingId,
@@ -341,8 +343,8 @@ export const ManageListingCardComponent = props => {
         <div className={css.manageLinks}>
           <NamedLink
             className={css.manageLink}
-            name="EditListingPage"
-            params={{ id, slug, type: editListingLinkType, tab: 'description' }}
+            name={typePage}
+            params={{ id, slug, type: editListingLinkType, tab: typeTab }}
           >
             <FormattedMessage id="ManageListingCard.editListing" />
           </NamedLink>
