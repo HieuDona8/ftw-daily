@@ -20,6 +20,7 @@ const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailV
 const InboxPage = loadable(() => import(/* webpackChunkName: "InboxPage" */ './containers/InboxPage/InboxPage'));
 const LandingPage = loadable(() => import(/* webpackChunkName: "LandingPage" */ './containers/LandingPage/LandingPage'));
 const ListingPage = loadable(() => import(/* webpackChunkName: "ListingPage" */ /* webpackPrefetch: true */ './containers/ListingPage/ListingPage'));
+const ListingTeacherPage = loadable(() => import(/* webpackChunkName: "ListingTeacherPage" */ /* webpackPrefetch: true */ './containers/ListingTeacherPage/ListingTeacherPage'));
 const ManageListingsPage = loadable(() => import(/* webpackChunkName: "ManageListingsPage" */ './containers/ManageListingsPage/ManageListingsPage'));
 const PasswordChangePage = loadable(() => import(/* webpackChunkName: "PasswordChangePage" */ './containers/PasswordChangePage/PasswordChangePage'));
 const PasswordRecoveryPage = loadable(() => import(/* webpackChunkName: "PasswordRecoveryPage" */ './containers/PasswordRecoveryPage/PasswordRecoveryPage'));
@@ -144,6 +145,12 @@ const routeConfiguration = () => {
       auth: true,
       component: EditListingTeacherPage,
       loadData: pageDataLoadingAPI.EditListingTeacherPage.loadData,
+    },
+    {
+      path: '/t/:slug/:id',
+      name: 'ListingTeacherPage',
+      component: ListingTeacherPage,
+      loadData: pageDataLoadingAPI.ListingTeacherPage.loadData,
     },
     // {
     //   path: '/t/:slug/:id/:type/:tab/:returnURLType',

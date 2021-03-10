@@ -161,7 +161,7 @@ const RedirectToStripe = ({ redirectFn }) => {
 };
 
 // Create a new or edit listing through EditListingWizard
-class EditListingWizard extends Component {
+class EditListingTeacherWizard extends Component {
   constructor(props) {
     super(props);
 
@@ -293,7 +293,7 @@ class EditListingWizard extends Component {
     }
 
     const tabLink = tab => {
-      return { name: 'EditListingPage', params: { ...params, tab } };
+      return { name: 'EditListingTeacherPage', params: { ...params, tab } };
     };
 
     const formDisabled = getAccountLinkInProgress;
@@ -342,7 +342,7 @@ class EditListingWizard extends Component {
 
     // Redirect from success URL to basic path for StripePayoutPage
     if (returnedNormallyFromStripe && stripeConnected && !requirementsMissing) {
-      return <NamedRedirect name="EditListingPage" params={pathParams} />;
+      return <NamedRedirect name="EditListingTeacherPage" params={pathParams} />;
     }
 
     return (
@@ -445,7 +445,7 @@ class EditListingWizard extends Component {
   }
 }
 
-EditListingWizard.defaultProps = {
+EditListingTeacherWizard.defaultProps = {
   className: null,
   currentUser: null,
   rootClassName: null,
@@ -460,7 +460,7 @@ EditListingWizard.defaultProps = {
   stripeAccountLinkError: null,
 };
 
-EditListingWizard.propTypes = {
+EditListingTeacherWizard.propTypes = {
   id: string.isRequired,
   className: string,
   currentUser: propTypes.currentUser,
@@ -520,4 +520,4 @@ EditListingWizard.propTypes = {
 export default compose(
   withViewport,
   injectIntl
-)(EditListingWizard);
+)(EditListingTeacherWizard);

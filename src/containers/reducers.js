@@ -9,6 +9,7 @@ import EditListingPage from './EditListingPage/EditListingPage.duck';
 import EditListingTeacherPage from './EditListingTeacherPage/EditListingTeacherPage.duck';
 import InboxPage from './InboxPage/InboxPage.duck';
 import ListingPage from './ListingPage/ListingPage.duck';
+import ListingTeacherPage from './ListingTeacherPage/ListingTeacherPage.duck';
 import ManageListingsPage from './ManageListingsPage/ManageListingsPage.duck';
 import PasswordChangePage from './PasswordChangePage/PasswordChangePage.duck';
 import PasswordRecoveryPage from './PasswordRecoveryPage/PasswordRecoveryPage.duck';
@@ -27,6 +28,7 @@ export {
   EditListingTeacherPage,
   InboxPage,
   ListingPage,
+  ListingTeacherPage,
   ManageListingsPage,
   PasswordChangePage,
   PasswordRecoveryPage,

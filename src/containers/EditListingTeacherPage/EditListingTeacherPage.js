@@ -119,7 +119,7 @@ export const EditListingTeacherPageComponent = props => {
           },
         }
       : {
-          name: 'ListingPage',
+          name: 'ListingTeacherPage',
           params: {
             id: listingId.uuid,
             slug: listingSlug,
