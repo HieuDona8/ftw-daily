@@ -62,7 +62,7 @@ const priceData = (price, intl) => {
   return {};
 };
 
-const createListingURL = (routes, listing) => {
+const createListingURL = (routes, listing, typeListing) => {
   const id = listing.id.uuid;
   const slug = createSlug(listing.attributes.title);
   const isPendingApproval = listing.attributes.state === LISTING_STATE_PENDING_APPROVAL;
@@ -84,7 +84,7 @@ const createListingURL = (routes, listing) => {
           },
         }
       : {
-          name: 'ListingPage',
+          name: typeListing,
           params: { id, slug },
         };
 
@@ -135,8 +135,8 @@ export const ManageListingCardComponent = props => {
   const isDraft = state === LISTING_STATE_DRAFT;
   const firstImage =
     currentListing.images && currentListing.images.length > 0 ? currentListing.images[0] : null;
-  const [typePage, typeTab] = listing.attributes.publicData.typeListing && listing.attributes.publicData.typeListing === 'teacher' ? 
-  ['EditListingTeacherPage','general'] : ['EditListingPage','description']
+  const [typePage, typeTab, typeListing] = listing.attributes.publicData.typeListing && listing.attributes.publicData.typeListing === 'teacher' ? 
+  ['EditListingTeacherPage','general', 'ListingTeacherPage'] : ['EditListingPage','description', 'ListingPage']
 
   const menuItemClasses = classNames(css.menuItem, {
     [css.menuItemDisabled]: !!actionsInProgressListingId,
@@ -150,7 +150,7 @@ export const ManageListingCardComponent = props => {
 
   const onOverListingLink = () => {
     // Enforce preloading of ListingPage (loadable component)
-    const { component: Page } = findRouteByRouteName('ListingPage', routeConfiguration());
+    const { component: Page } = findRouteByRouteName(typeListing, routeConfiguration());
     // Loadable Component has a "preload" function.
     if (Page.preload) {
       Page.preload();
@@ -190,7 +190,7 @@ export const ManageListingCardComponent = props => {
           //
           // NOTE: It might be better to absolute-position those buttons over a card-links.
           // (So, that they have no parent-child relationship - like '<a>bla<a>blaa</a></a>')
-          history.push(createListingURL(routeConfiguration(), listing));
+          history.push(createListingURL(routeConfiguration(), listing, typeListing));
         }}
         onMouseOver={onOverListingLink}
         onTouchStart={onOverListingLink}
@@ -332,7 +332,7 @@ export const ManageListingCardComponent = props => {
               onClick={event => {
                 event.preventDefault();
                 event.stopPropagation();
-                history.push(createListingURL(routeConfiguration(), listing));
+                history.push(createListingURL(routeConfiguration(), listing, typeListing));
               }}
             >
               {formatTitle(title, MAX_LENGTH_FOR_WORDS_IN_TITLE)}
