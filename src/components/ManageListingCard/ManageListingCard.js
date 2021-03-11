@@ -135,7 +135,7 @@ export const ManageListingCardComponent = props => {
   const isDraft = state === LISTING_STATE_DRAFT;
   const firstImage =
     currentListing.images && currentListing.images.length > 0 ? currentListing.images[0] : null;
-  const [typePage, typeTab] = listing.attributes.publicData.type && listing.attributes.publicData.type === 'teacher' ? 
+  const [typePage, typeTab] = listing.attributes.publicData.typeListing && listing.attributes.publicData.typeListing === 'teacher' ? 
   ['EditListingTeacherPage','general'] : ['EditListingPage','description']
 
   const menuItemClasses = classNames(css.menuItem, {

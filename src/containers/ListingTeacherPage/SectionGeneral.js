@@ -31,7 +31,7 @@ const SectionGeneral = props => {
         <PropertyGroup
           id="ListingTeacherPage.subjects"
           options={generalService.options.subjects}
-          selectedOptions={generalService.data.subject}
+          selectedOptions={generalService.data.subjects}
           twoColumns={false}
         />
       </div>

@@ -379,7 +379,7 @@ export class ListingTeacherPageComponent extends Component {
         subjects: findOptionsForSelectFilter('subjects', filterConfig) || []
       },
       data: {
-        ...publicData.general
+        ...publicData
       }
     }
   

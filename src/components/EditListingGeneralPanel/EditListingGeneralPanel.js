@@ -59,8 +59,8 @@ const EditListingGeneralPanel = props => {
       requiredMessage: intl.formatMessage({id: 'EditListingGeneralForm.bioRequired'})
     },
     subjects: {
-      name: 'subject',
-      label: 'Your subject',
+      name: 'subjects',
+      label: 'Your subjects',
       requiredMessage: intl.formatMessage({id: 'EditListingGeneralForm.subjectsRequired'})
     },
     levels: {
@@ -99,13 +99,13 @@ const EditListingGeneralPanel = props => {
       <EditListingGeneralForm
         className={css.form}
         infoForm={infoForm}
-        initialValues={publicData.general ? { 
+        initialValues={publicData.subjects && publicData.levels && publicData.timeType && publicData.numberHour ? { 
           [infoForm.name.name]: currentListing.attributes.title, 
           [infoForm.bio.name]: currentListing.attributes.description,
-          [infoForm.subjects.name]: publicData.general.subject,
-          [infoForm.levels.name]: publicData.general.levels,
-          [infoForm.timeFull.name]: publicData.general.timeType,
-          [infoForm.numberHour.name]: publicData.general.numberHour,
+          [infoForm.subjects.name]: publicData.subjects,
+          [infoForm.levels.name]: publicData.levels,
+          [infoForm.timeFull.name]: publicData.timeType,
+          [infoForm.numberHour.name]: publicData.numberHour,
         }: {}}
         saveActionMsg={submitButtonText}
         onSubmit={values => {
@@ -114,8 +114,8 @@ const EditListingGeneralPanel = props => {
             title: title.trim(),
             description,
             publicData: { 
-              general,
-              type: typeListing
+              ...general,
+              typeListing
             },
           };
           onSubmit(updateValues);

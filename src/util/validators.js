@@ -30,6 +30,15 @@ export const required = message => value => {
   return VALID;
 };
 
+export const requiredValue = message => value => {
+  if (typeof value === 'undefined' || value === null || value.length <= 0) {
+    // undefined or null values are invalid
+    return message;
+  }
+  
+  return VALID;
+};
+
 export const requiredStringNoTrim = message => value => {
   return typeof value === 'string' && value.length > 0 ? VALID : message;
 };

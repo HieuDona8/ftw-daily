@@ -5,7 +5,7 @@ import { Form as FinalForm, FormSpy } from 'react-final-form';
 import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
-import { maxLength, required, composeValidators, maxValue, minValue } from '../../util/validators';
+import { maxLength, required, composeValidators, maxValue, minValue, requiredValue } from '../../util/validators';
 import { Form, Button, FieldTextInput, FieldCheckboxGroup, FieldRadioButton } from '../../components';
 import CustomCategorySelectFieldMaybe from './CustomCategorySelectFieldMaybe';
 import config from '../../config';
@@ -78,7 +78,6 @@ const EditListingGeneralFormComponent = props => {
       
       const handleChange = (property) => {
         const {values} = property
-        
         if(values.timeType === 'full') {
           form.change(infoForm.numberHour.name, '8')
         }
@@ -117,7 +116,7 @@ const EditListingGeneralFormComponent = props => {
             name={infoForm.subjects.name} 
             className={css.features}
             options={optionSubjects} 
-            validate={required(infoForm.subjects.requiredMessage)}
+            validate={requiredValue(infoForm.subjects.requiredMessage)}
           />
 
           <FieldCheckboxGroup 
@@ -126,7 +125,7 @@ const EditListingGeneralFormComponent = props => {
             label={infoForm.levels.label} 
             name={infoForm.levels.name} 
             options={optionLevels} 
-            validate={required(infoForm.levels.requiredMessage)}
+            validate={requiredValue(infoForm.levels.requiredMessage)}
           />
 
           <FormSpy onChange={handleChange}/>
