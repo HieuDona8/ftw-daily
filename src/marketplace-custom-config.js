@@ -144,10 +144,61 @@ export const filters = [
     },
   },
   {
+    id: 'numberHour',
+    label: 'Hour Teaching',
+    type: 'SelectSingleFilter',
+    group: 'primary',
+    queryParamNames: ['pub_numberHour'],
+    config: {
+      // Optional modes: 'has_all', 'has_any'
+      // https://www.sharetribe.com/api-reference/marketplace.html#extended-data-filtering
+      searchMode: 'has_any',
+
+      // "key" is the option you see in Flex Console.
+      // "label" is set here for this web app's UI only.
+      // Note: label is not added through the translation files
+      // to make filter customizations a bit easier.
+      options: [
+        {
+          key: '1',
+          label: '1 Hours',
+        },
+        {
+          key: '2',
+          label: '2 Hours',
+        },
+        {
+          key: '3',
+          label: '3 Hours',
+        },
+        {
+          key: '4',
+          label: '4 Hours',
+        },
+        {
+          key: '5',
+          label: '5 Hours',
+        },
+        {
+          key: '6',
+          label: '6 Hours',
+        },
+        {
+          key: '7',
+          label: '7 Hours',
+        },
+        {
+          key: '8',
+          label: '8 Hours',
+        }
+      ],
+    },
+  },
+  {
     id: 'subjects',
     label: 'subjects',
     type: 'SelectMultipleFilter',
-    group: 'secondary',
+    group: 'primary',
     queryParamNames: ['pub_subjects'],
     config: {
       // Optional modes: 'has_all', 'has_any'
@@ -178,7 +229,7 @@ export const filters = [
     id: 'levels',
     label: 'levels',
     type: 'SelectMultipleFilter',
-    group: 'secondary',
+    group: 'primary',
     queryParamNames: ['pub_levels'],
     config: {
       // Optional modes: 'has_all', 'has_any'
