@@ -1,9 +1,46 @@
 {:format :v3,
  :transitions
- [{:name :transition/enquire,
+ [
+  ;;
+  {:name :transition/enquire,
    :actor :actor.role/customer,
    :actions [],
    :to :state/enquiry}
+  ;;;;;;;;;;;;;;;;;      
+
+  {:name :transition/first-request-payment-after-enquiry
+   :actor :actor.role/customer
+   :actions
+   [{:name :action/create-booking
+     :config {:observe-availability? true}}
+    {:name :action/privileged-set-line-items}
+    {:name :action/stripe-create-payment-intent}]
+   :from :state/enquiry
+   :to :state/pending-payment
+   :privileged? true}
+
+  {:name :transition/request-payment-after-enquiry
+   :actor :actor.role/customer
+   :actions
+   [{:name :action/create-booking
+     :config {:observe-availability? true}}
+    {:name :action/privileged-set-line-items}
+    {:name :action/stripe-create-payment-intent}]
+   :from :state/enquiry
+   :to :state/pending-payment
+   :privileged? true}
+  ;;;;;;;;;;;;;;;;;;;;;;     
+
+   {:name :transition/first-request-payment
+    :actor :actor.role/customer
+    :actions
+    [{:name :action/create-booking
+      :config {:observe-availability? true}}
+     {:name :action/privileged-set-line-items}
+     {:name :action/stripe-create-payment-intent}]
+    :to :state/pending-payment
+    :privileged? true}
+   
   {:name :transition/request-payment,
    :actor :actor.role/customer,
    :actions
@@ -13,16 +50,8 @@
     {:name :action/stripe-create-payment-intent}],
    :to :state/pending-payment
    :privileged? true}
-  {:name :transition/request-payment-after-enquiry,
-   :actor :actor.role/customer,
-   :actions
-   [{:name :action/create-booking,
-     :config {:observe-availability? true}}
-    {:name :action/privileged-set-line-items}
-    {:name :action/stripe-create-payment-intent}],
-   :from :state/enquiry,
-   :to :state/pending-payment
-   :privileged? true}
+  ;;;;;;;;;;;;;;;;
+
   {:name :transition/expire-payment,
    :at
    {:fn/plus
@@ -34,11 +63,17 @@
     {:name :action/stripe-refund-payment}],
    :from :state/pending-payment,
    :to :state/payment-expired}
+;;;;;;;;;;;;;;;;
+
+
   {:name :transition/confirm-payment,
    :actor :actor.role/customer,
    :actions [{:name :action/stripe-confirm-payment-intent}],
    :from :state/pending-payment,
    :to :state/preauthorized}
+;;;;;;;;;;;;;;;;;;
+
+
   {:name :transition/accept,
    :actor :actor.role/provider,
    :actions
@@ -46,6 +81,8 @@
     {:name :action/stripe-capture-payment-intent}],
    :from :state/preauthorized,
    :to :state/accepted}
+;;;;;;;;;;;
+
   {:name :transition/decline,
    :actor :actor.role/provider,
    :actions
@@ -54,33 +91,79 @@
     {:name :action/stripe-refund-payment}],
    :from :state/preauthorized,
    :to :state/declined}
+ ;;;;;;;;;;;; 
+
   {:name :transition/expire,
    :at
-   {:fn/min
-    [{:fn/plus
-      [{:fn/timepoint [:time/first-entered-state :state/preauthorized]}
-       {:fn/period ["P6D"]}]}
-     {:fn/plus
-      [{:fn/timepoint [:time/booking-end]} {:fn/period ["P1D"]}]}]},
+   {:fn/plus
+    [{:fn/timepoint [:time/booking-start]}
+     {:fn/period ["PT2H"]}]},
    :actions
    [{:name :action/decline-booking}
     {:name :action/calculate-full-refund}
     {:name :action/stripe-refund-payment}],
    :from :state/preauthorized,
    :to :state/declined}
+ ;;;;;;;;;;;;;;; 
+
   {:name :transition/complete,
    :at {:fn/timepoint [:time/booking-end]},
    :actions [{:name :action/stripe-create-payout}],
    :from :state/accepted,
    :to :state/delivered}
-  {:name :transition/cancel,
-   :actor :actor.role/operator,
+;;;;;;;;;;;;  
+;;;;;;;;;;;;;;;
+  {:name :transition/provider-cancel-refund
+   :actor :actor.role/provider
+   :actions
+   [{:name :action/cancel-booking}
+    {:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}]
+   :from :state/accepted
+   :to :state/cancelled}
+  ;;;;
+  {:name :transition/customer-cancel-refund
+   :actor :actor.role/customer
+   :actions
+   [{:name :action/cancel-booking}
+    {:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}]
+   :from :state/accepted
+   :to :state/cancelled}
+  
+  {:name :transition/mark-transaction-after-48H
+   :at
+   {:fn/plus
+      [{:fn/timepoint [:time/booking-start]}
+      {:fn/period ["PT48H"]}]}
+   :actions []
+   :from :state/accepted
+   :to :state/after-48H}
+  
+  {:name :transition/provider-cancel-refund-after-48H,
+   :actor :actor.role/provider,
    :actions
    [{:name :action/cancel-booking}
     {:name :action/calculate-full-refund}
     {:name :action/stripe-refund-payment}],
-   :from :state/accepted,
+   :from :state/after-48H,
    :to :state/cancelled}
+  
+   {:name :transition/customer-cancel-non-refund
+    :actor :actor.role/customer
+    :actions
+    [{:name :action/cancel-booking}]
+    :from :state/after-48H
+    :to :state/cancelled}
+  
+  {:name :transition/complete-after-48H
+   :at {:fn/timepoint [:time/booking-end]}
+   :actions [{:name :action/stripe-create-payout}]
+   :from :state/after-48H
+   :to :state/delivered}
+;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;  
   {:name :transition/review-1-by-provider,
    :actor :actor.role/provider,
    :actions [{:name :action/post-review-by-provider}],
