@@ -468,6 +468,7 @@ export class ListingTeacherPageComponent extends Component {
                     lineItems={lineItems}
                     fetchLineItemsInProgress={fetchLineItemsInProgress}
                     fetchLineItemsError={fetchLineItemsError}
+                    currentUser={currentUser}
                   />
                 </div>
               </div>
@@ -593,8 +594,8 @@ const mapDispatchToProps = dispatch => ({
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
   callSetInitialValues: (setInitialValues, values, saveToSessionStorage) =>
     dispatch(setInitialValues(values, saveToSessionStorage)),
-  onFetchTransactionLineItems: (bookingData, listingId, isOwnListing) =>
-    dispatch(fetchTransactionLineItems(bookingData, listingId, isOwnListing)),
+  onFetchTransactionLineItems: (bookingData, listingId, isOwnListing, currentUserID) =>
+    dispatch(fetchTransactionLineItems(bookingData, listingId, isOwnListing, currentUserID)),
   onSendEnquiry: (listingId, message) => dispatch(sendEnquiry(listingId, message)),
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
 });

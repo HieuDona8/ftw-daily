@@ -52,6 +52,7 @@ export const ListingCardComponent = props => {
   const authorName = author.attributes.profile.displayName;
   const firstImage =
     currentListing.images && currentListing.images.length > 0 ? currentListing.images[0] : null;
+  const [ListingPage]  = currentListing.attributes.publicData.typeListing === 'teacher' ? ['ListingTeacherPage']: ['ListingPage'];
 
   const { formattedPrice, priceTitle } = priceData(price, intl);
 
@@ -66,7 +67,7 @@ export const ListingCardComponent = props => {
     : 'ListingCard.perUnit';
 
   return (
-    <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
+    <NamedLink className={classes} name={ListingPage} params={{ id, slug }}>
       <div
         className={css.threeToTwoWrapper}
         onMouseEnter={() => setActiveListing(currentListing.id)}

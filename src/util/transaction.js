@@ -14,11 +14,13 @@ import { ensureTransaction } from './data';
 // At this transition a PaymentIntent is created by Marketplace API.
 // After this transition, the actual payment must be made on client-side directly to Stripe.
 export const TRANSITION_REQUEST_PAYMENT = 'transition/request-payment';
+export const TRANSITION_FIRST_REQUEST_PAYMENT = 'transition/first-request-payment';
 
 // A customer can also initiate a transaction with an enquiry, and
 // then transition that with a request.
 export const TRANSITION_ENQUIRE = 'transition/enquire';
 export const TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY = 'transition/request-payment-after-enquiry';
+export const TRANSITION_FIRST_REQUEST_PAYMENT_AFTER_ENQUIRY = 'transition/first-request-payment-after-enquiry';
 
 // Stripe SDK might need to ask 3D security from customer, in a separate front-end step.
 // Therefore we need to make another transition to Marketplace API,
@@ -42,6 +44,14 @@ export const TRANSITION_CANCEL = 'transition/cancel';
 
 // The backend will mark the transaction completed.
 export const TRANSITION_COMPLETE = 'transition/complete';
+
+export const TRANSITION_PROVIDER_CANCEL_REFUND = 'transition/provider-cancel-refund';
+export const TRANSITION_CUSTOMER_CANCEL_REFUND = 'transition/customer-cancel-refund';
+
+export const TRANSITION_MARK_TRANSACTION_AFTER_48H = 'transition/mark-transaction-after-48H';
+export const TRANSITION_PROVIDER_CANCEL_REFUND_AFTER_48H = 'transition/provider-cancel-refund-after-48H';
+export const TRANSITION_CUSTOMER_CANCEL_NON_REFUND_AFTER_48H = 'transition/customer-cancel-non-refund-after-48H';
+export const TRANSITION_COMPLETE_AFTER_48H = 'transition/complete-after-48H';
 
 // Reviews are given through transaction transitions. Review 1 can be
 // by provider or customer, and review 2 will be the other party of
@@ -94,7 +104,7 @@ const STATE_DELIVERED = 'delivered';
 const STATE_REVIEWED = 'reviewed';
 const STATE_REVIEWED_BY_CUSTOMER = 'reviewed-by-customer';
 const STATE_REVIEWED_BY_PROVIDER = 'reviewed-by-provider';
-
+const STATE_AFTER_48H = 'after-48H';
 /**
  * Description of transaction process
  *
@@ -108,7 +118,7 @@ const stateDescription = {
   // id is defined only to support Xstate format.
   // However if you have multiple transaction processes defined,
   // it is best to keep them in sync with transaction process aliases.
-  id: 'flex-default-process/release-1',
+  id: 'dona-teacher-booking/release-1',
 
   // This 'initial' state is a starting point for new transaction
   initial: STATE_INITIAL,
@@ -119,11 +129,13 @@ const stateDescription = {
       on: {
         [TRANSITION_ENQUIRE]: STATE_ENQUIRY,
         [TRANSITION_REQUEST_PAYMENT]: STATE_PENDING_PAYMENT,
+        [TRANSITION_FIRST_REQUEST_PAYMENT]: STATE_PENDING_PAYMENT
       },
     },
     [STATE_ENQUIRY]: {
       on: {
         [TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY]: STATE_PENDING_PAYMENT,
+        [TRANSITION_FIRST_REQUEST_PAYMENT_AFTER_ENQUIRY]: STATE_PENDING_PAYMENT,
       },
     },
 
@@ -148,10 +160,20 @@ const stateDescription = {
       on: {
         [TRANSITION_CANCEL]: STATE_CANCELED,
         [TRANSITION_COMPLETE]: STATE_DELIVERED,
+        [TRANSITION_PROVIDER_CANCEL_REFUND]: STATE_CANCELED,
+        [TRANSITION_CUSTOMER_CANCEL_REFUND]: STATE_CANCELED,
+        [TRANSITION_MARK_TRANSACTION_AFTER_48H]: STATE_ACCEPTED
       },
     },
 
     [STATE_CANCELED]: {},
+    [STATE_AFTER_48H]: {
+       on: {
+         [TRANSITION_PROVIDER_CANCEL_REFUND_AFTER_48H]: STATE_CANCELED,
+         [TRANSITION_CUSTOMER_CANCEL_NON_REFUND_AFTER_48H]: STATE_CANCELED,
+         [TRANSITION_COMPLETE_AFTER_48H]: STATE_DELIVERED
+       }
+    },
     [STATE_DELIVERED]: {
       on: {
         [TRANSITION_EXPIRE_REVIEW_PERIOD]: STATE_REVIEWED,

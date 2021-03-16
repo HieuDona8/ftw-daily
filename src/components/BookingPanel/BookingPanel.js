@@ -69,6 +69,7 @@ const BookingPanel = props => {
     lineItems,
     fetchLineItemsInProgress,
     fetchLineItemsError,
+    currentUser
   } = props;
 
   const price = listing.attributes.price;
@@ -134,6 +135,7 @@ const BookingPanel = props => {
             lineItems={lineItems}
             fetchLineItemsInProgress={fetchLineItemsInProgress}
             fetchLineItemsError={fetchLineItemsError}
+            currentUser={currentUser}
           />
         ) : null}
       </ModalInMobile>
