@@ -48,6 +48,7 @@ import SectionHeading from './SectionHeading';
 import SectionGeneral from './SectionGeneral';
 import SectionFeaturesMaybe from './SectionFeaturesMaybe';
 import SectionMapMaybe from './SectionMapMaybe';
+import SectionHostMaybe from './SectionHostMaybe';
 import css from './ListingTeacherPage.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
@@ -94,11 +95,13 @@ export class ListingTeacherPageComponent extends Component {
       params,
       callSetInitialValues,
       onInitializeCardPaymentData,
+      lineItems
     } = this.props;
     const listingId = new UUID(params.id);
     const listing = getListing(listingId);
 
     const { bookingDates, ...bookingData } = values;
+    const { isFirstBooking } = lineItems[2] ? lineItems[2] : {};
 
     const initialValues = {
       listing,
@@ -108,6 +111,7 @@ export class ListingTeacherPageComponent extends Component {
         bookingEnd: bookingDates.endDate,
       },
       confirmPaymentError: null,
+      isFirstBooking
     };
 
     const saveToSessionStorage = !this.props.currentUser;
@@ -450,6 +454,20 @@ export class ListingTeacherPageComponent extends Component {
                       geolocation={geolocation}
                       publicData={publicData}
                       listingId={currentListing.id}
+                    />
+
+                    <SectionHostMaybe
+                      title={title}
+                      listing={currentListing}
+                      authorDisplayName={authorDisplayName}
+                      onContactUser={this.onContactUser}
+                      isEnquiryModalOpen={isAuthenticated && this.state.enquiryModalOpen}
+                      onCloseEnquiryModal={() => this.setState({ enquiryModalOpen: false })}
+                      sendEnquiryError={sendEnquiryError}
+                      sendEnquiryInProgress={sendEnquiryInProgress}
+                      onSubmitEnquiry={this.onSubmitEnquiry}
+                      currentUser={currentUser}
+                      onManageDisableScrolling={onManageDisableScrolling}
                     />
                   </div>
                   <BookingPanel

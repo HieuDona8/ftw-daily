@@ -141,6 +141,8 @@ export class CheckoutPageComponent extends Component {
       fetchSpeculatedTransaction,
       fetchStripeCustomer,
       history,
+      currentUser,
+      isFirstBooking,
     } = this.props;
 
     // Fetch currentUser with stripeCustomer entity
@@ -157,18 +159,18 @@ export class CheckoutPageComponent extends Component {
     const hasDataInProps = !!(bookingData && bookingDates && listing) && hasNavigatedThroughLink;
     if (hasDataInProps) {
       // Store data only if data is passed through props and user has navigated through a link.
-      storeData(bookingData, bookingDates, listing, transaction, STORAGE_KEY);
+      storeData(bookingData, bookingDates, listing, transaction, isFirstBooking, currentUser, STORAGE_KEY);
     }
 
     // NOTE: stored data can be empty if user has already successfully completed transaction.
     const pageData = hasDataInProps
-      ? { bookingData, bookingDates, listing, transaction }
+      ? { bookingData, bookingDates, listing, transaction, isFirstBooking, currentUser }
       : storedData(STORAGE_KEY);
 
     // Check if a booking is already created according to stored data.
     const tx = pageData ? pageData.transaction : null;
     const isBookingCreated = tx && tx.booking && tx.booking.id;
-
+    
     const shouldFetchSpeculatedTransaction =
       pageData &&
       pageData.listing &&
@@ -183,6 +185,8 @@ export class CheckoutPageComponent extends Component {
       const listingId = pageData.listing.id;
       const transactionId = tx ? tx.id : null;
       const { bookingStart, bookingEnd } = pageData.bookingDates;
+      const isFirstBooking = pageData.isFirstBooking;
+      const currentUserID = pageData.currentUser ? pageData.currentUser.id.uuid : null;
 
       // Convert picked date to date that will be converted on the API as
       // a noon of correct year-month-date combo in UTC
@@ -198,6 +202,8 @@ export class CheckoutPageComponent extends Component {
           bookingStart: bookingStartForAPI,
           bookingEnd: bookingEndForAPI,
         },
+        isFirstBooking,
+        currentUserID,
         transactionId
       );
     }
@@ -918,7 +924,9 @@ const mapStateToProps = state => {
     transaction,
     initiateOrderError,
     confirmPaymentError,
+    isFirstBooking
   } = state.CheckoutPage;
+
   const { currentUser } = state.user;
   const { confirmCardPaymentError, paymentIntent, retrievePaymentIntentError } = state.stripe;
   return {
@@ -937,13 +945,14 @@ const mapStateToProps = state => {
     confirmPaymentError,
     paymentIntent,
     retrievePaymentIntentError,
+    isFirstBooking
   };
 };
 
 const mapDispatchToProps = dispatch => ({
   dispatch,
-  fetchSpeculatedTransaction: (params, transactionId) =>
-    dispatch(speculateTransaction(params, transactionId)),
+  fetchSpeculatedTransaction: (params, isFirstBooking, currentUserID, transactionId) =>
+    dispatch(speculateTransaction(params, isFirstBooking, currentUserID, transactionId)),
   fetchStripeCustomer: () => dispatch(stripeCustomer()),
   onInitiateOrder: (params, transactionId) => dispatch(initiateOrder(params, transactionId)),
   onRetrievePaymentIntent: params => dispatch(retrievePaymentIntent(params)),

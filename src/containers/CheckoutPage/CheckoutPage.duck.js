@@ -7,6 +7,8 @@ import {
   TRANSITION_REQUEST_PAYMENT,
   TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY,
   TRANSITION_CONFIRM_PAYMENT,
+  TRANSITION_FIRST_REQUEST_PAYMENT,
+  TRANSITION_FIRST_REQUEST_PAYMENT_AFTER_ENQUIRY,
   isPrivileged,
 } from '../../util/transaction';
 import * as log from '../../util/log';
@@ -45,6 +47,7 @@ const initialState = {
   initiateOrderError: null,
   confirmPaymentError: null,
   stripeCustomerFetched: false,
+  isFirstBooking: false,
 };
 
 export default function checkoutPageReducer(state = initialState, action = {}) {
@@ -298,15 +301,16 @@ export const sendMessage = params => (dispatch, getState, sdk) => {
  * pricing info for the booking breakdown to get a proper estimate for
  * the price with the chosen information.
  */
-export const speculateTransaction = (orderParams, transactionId) => (dispatch, getState, sdk) => {
+export const speculateTransaction = (orderParams, isFirstBooking, currentUserID, transactionId) => (dispatch, getState, sdk) => {
   dispatch(speculateTransactionRequest());
 
   // If we already have a transaction ID, we should transition, not
   // initiate.
   const isTransition = !!transactionId;
+
   const transition = isTransition
-    ? TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY
-    : TRANSITION_REQUEST_PAYMENT;
+    ? (isFirstBooking ? TRANSITION_FIRST_REQUEST_PAYMENT_AFTER_ENQUIRY : TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY)
+    : (isFirstBooking ? TRANSITION_FIRST_REQUEST_PAYMENT : TRANSITION_REQUEST_PAYMENT);
   const isPrivilegedTransition = isPrivileged(transition);
 
   const bookingData = {
@@ -368,7 +372,7 @@ export const speculateTransaction = (orderParams, transactionId) => (dispatch, g
       .catch(handleError);
   } else if (isPrivilegedTransition) {
     // initiate privileged
-    return initiatePrivileged({ isSpeculative: true, bookingData, bodyParams, queryParams })
+    return initiatePrivileged({ isSpeculative: true, bookingData, bodyParams, queryParams, currentUserID })
       .then(handleSuccess)
       .catch(handleError);
   } else {

@@ -57,7 +57,7 @@ export class BookingDatesFormComponent extends Component {
       formValues.values && formValues.values.bookingDates ? formValues.values.bookingDates : {};
     const listingId = this.props.listingId;
     const isOwnListing = this.props.isOwnListing;
-    const currentUserID = this.props.currentUser.id.uuid || undefined;
+    const currentUserID = this.props.currentUser ? this.props.currentUser.id.uuid : undefined;
 
     if (startDate && endDate && !this.props.fetchLineItemsInProgress) {
       this.props.onFetchTransactionLineItems({

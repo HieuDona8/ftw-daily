@@ -61,8 +61,7 @@ exports.transactionLineItems = (listing, bookingData, isFirstBooking) => {
 
   const customerCommission = {
     code: 'line-item/customer-commission',
-    unitPrice,
-    quantity: calculateQuantityFromDates(startDate, endDate, bookingUnitType),
+    unitPrice: calculateTotalFromLineItems([booking]),
     percentage: CUSTOMER_COMMISSION_PERCENTAGE,
     includeFor: ['customer'],
     isFirstBooking
