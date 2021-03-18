@@ -139,3 +139,7 @@ exports.integrationSdk = flexIntegrationSdk.createInstance({
   clientId: INTEGRATION_CLIENT_ID,
   clientSecret: INTEGRATION_CLIENT_SECRET
 });
+
+exports.createUUID = (id) => {
+  return new flexIntegrationSdk.types.UUID(id);
+};

@@ -1,5 +1,5 @@
 const { transactionLineItems } = require('../api-util/lineItems');
-const { getSdk, getTrustedSdk, handleError, serialize } = require('../api-util/sdk');
+const { getSdk, getTrustedSdk, handleError, serialize, integrationSdk, createUUID } = require('../api-util/sdk');
 
 module.exports = (req, res) => {
   const { isSpeculative, bookingData, bodyParams, queryParams, currentUserID } = req.body;
@@ -7,12 +7,13 @@ module.exports = (req, res) => {
 
   const sdk = getSdk(req, res);
   let lineItems = null;
+  const uuid = createUUID(currentUserID);
 
-  sdk.listings
-    .show({ id: listingId })
-    .then(listingResponse => {
-      const listing = listingResponse.data.data;
-      lineItems = transactionLineItems(listing, bookingData, currentUserID);
+  Promise.all([sdk.listings.show({ id: listingId }), integrationSdk.transactions.query({customerId: uuid})])
+    .then(apiResponse => {
+      const listing = apiResponse[0].data.data;
+      const isFirstBooking = apiResponse[1].data.meta.totalItems <= 0;
+      lineItems = transactionLineItems(listing, bookingData, isFirstBooking);
 
       return getTrustedSdk(req);
     })

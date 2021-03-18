@@ -164,15 +164,16 @@ export const stripeCustomerError = e => ({
 
 /* ================ Thunks ================ */
 
-export const initiateOrder = (orderParams, transactionId) => (dispatch, getState, sdk) => {
+export const initiateOrder = (orderParams, isFirstBooking, currentUserID, transactionId) => (dispatch, getState, sdk) => {
   dispatch(initiateOrderRequest());
 
   // If we already have a transaction ID, we should transition, not
   // initiate.
   const isTransition = !!transactionId;
+
   const transition = isTransition
-    ? TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY
-    : TRANSITION_REQUEST_PAYMENT;
+    ? (isFirstBooking ? TRANSITION_FIRST_REQUEST_PAYMENT_AFTER_ENQUIRY : TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY)
+    : (isFirstBooking ? TRANSITION_FIRST_REQUEST_PAYMENT : TRANSITION_REQUEST_PAYMENT);
   const isPrivilegedTransition = isPrivileged(transition);
 
   const bookingData = {
@@ -229,7 +230,7 @@ export const initiateOrder = (orderParams, transactionId) => (dispatch, getState
       .catch(handleError);
   } else if (isPrivilegedTransition) {
     // initiate privileged
-    return initiatePrivileged({ isSpeculative: false, bookingData, bodyParams, queryParams })
+    return initiatePrivileged({ isSpeculative: false, bookingData, bodyParams, queryParams, currentUserID })
       .then(handleSucces)
       .catch(handleError);
   } else {

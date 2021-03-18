@@ -230,6 +230,8 @@ export class CheckoutPageComponent extends Component {
       saveAfterOnetimePayment,
     } = handlePaymentParams;
     const storedTx = ensureTransaction(pageData.transaction);
+    const isFirstBooking = pageData.isFirstBooking;
+    const currentUserID = pageData.currentUser ? pageData.currentUser.id.uuid : undefined;
 
     const ensuredCurrentUser = ensureCurrentUser(currentUser);
     const ensuredStripeCustomer = ensureStripeCustomer(ensuredCurrentUser.stripeCustomer);
@@ -257,7 +259,7 @@ export class CheckoutPageComponent extends Component {
         storedTx.attributes.protectedData && storedTx.attributes.protectedData.stripePaymentIntents;
 
       // If paymentIntent exists, order has been initiated previously.
-      return hasPaymentIntents ? Promise.resolve(storedTx) : onInitiateOrder(fnParams, storedTx.id);
+      return hasPaymentIntents ? Promise.resolve(storedTx) : onInitiateOrder(fnParams, isFirstBooking, currentUserID, storedTx.id);
     };
 
     // Step 2: pay using Stripe SDK
@@ -954,7 +956,7 @@ const mapDispatchToProps = dispatch => ({
   fetchSpeculatedTransaction: (params, isFirstBooking, currentUserID, transactionId) =>
     dispatch(speculateTransaction(params, isFirstBooking, currentUserID, transactionId)),
   fetchStripeCustomer: () => dispatch(stripeCustomer()),
-  onInitiateOrder: (params, transactionId) => dispatch(initiateOrder(params, transactionId)),
+  onInitiateOrder: (params, isFirstBooking, currentUserID, transactionId) => dispatch(initiateOrder(params, isFirstBooking, currentUserID, transactionId)),
   onRetrievePaymentIntent: params => dispatch(retrievePaymentIntent(params)),
   onConfirmCardPayment: params => dispatch(confirmCardPayment(params)),
   onConfirmPayment: params => dispatch(confirmPayment(params)),
