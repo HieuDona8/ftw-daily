@@ -9,7 +9,7 @@ import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
 import { required, bookingDatesRequired, composeValidators } from '../../util/validators';
 import { START_DATE, END_DATE } from '../../util/dates';
 import { propTypes } from '../../util/types';
-import { Form, IconSpinner, PrimaryButton, FieldDateRangeInput } from '../../components';
+import { Form, IconSpinner, PrimaryButton, FieldDateRangeInput, FieldTimeRange } from '../../components';
 import EstimatedBreakdownMaybe from './EstimatedBreakdownMaybe';
 
 import css from './BookingDatesForm.module.css';
@@ -19,7 +19,7 @@ const identity = v => v;
 export class BookingDatesFormComponent extends Component {
   constructor(props) {
     super(props);
-    this.state = { focusedInput: null };
+    this.state = { focusedInput: null, bookingDates: null, bookingTimes: null };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
     this.onFocusedInputChange = this.onFocusedInputChange.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
@@ -52,14 +52,36 @@ export class BookingDatesFormComponent extends Component {
   // lineItems from FTW backend for the EstimatedTransactionMaybe
   // In case you add more fields to the form, make sure you add
   // the values here to the bookingData object.
-  handleOnChange(formValues) {
-    const { startDate, endDate } =
+  handleOnChange(formValues, form) {    
+    const { startDate, endDate, selectStart, selectEnd } =
       formValues.values && formValues.values.bookingDates ? formValues.values.bookingDates : {};
     const listingId = this.props.listingId;
     const isOwnListing = this.props.isOwnListing;
     const currentUserID = this.props.currentUser ? this.props.currentUser.id.uuid : undefined;
 
+    if(startDate && moment(startDate).startOf('day').isSame(moment().startOf('day'))){
+      const currentHour = moment().hours();
+      const currentMinutes = moment().minutes();
+      if(!selectStart) {
+        if(moment().minutes() <= 30) {
+          form.change('selectStart', `${currentHour}:30`)
+          form.change('selectEnd', `00:00`)
+        } else {
+          form.change('selectStart', `${currentHour + 1}:00`)
+          form.change('selectEnd', `00:00`)
+        }
+      }else{
+          if(Number(selectStart.split(':')[0]) <= currentHour){
+            form.change('selectStart', `${currentHour + 1}:00`)
+          }
+          if(Number(selectStart.split(':')[0]) === currentHour && Number(selectStart.split(':')[0]) <= currentMinutes){
+            currentMinutes <= 30 ? form.change('selectStart', `${currentHour}:30`): form.change('selectStart', `${currentHour + 1}:00`);
+          }
+      }      
+    }
+
     if (startDate && endDate && !this.props.fetchLineItemsInProgress) {
+      this.setState({ bookingDates: formValues.values.bookingDates })
       this.props.onFetchTransactionLineItems({
         bookingData: { startDate, endDate },
         listingId,
@@ -67,7 +89,9 @@ export class BookingDatesFormComponent extends Component {
         currentUserID
       });
     }
+
   }
+
 
   render() {
     const { rootClassName, className, price: unitPrice, ...rest } = this.props;
@@ -113,6 +137,7 @@ export class BookingDatesFormComponent extends Component {
             lineItems,
             fetchLineItemsInProgress,
             fetchLineItemsError,
+            form
           } = fieldRenderProps;
           const { startDate, endDate } = values && values.bookingDates ? values.bookingDates : {};
 
@@ -199,7 +224,8 @@ export class BookingDatesFormComponent extends Component {
               <FormSpy
                 subscription={{ values: true }}
                 onChange={values => {
-                  this.handleOnChange(values);
+
+                  this.handleOnChange(values, form);
                 }}
               />
               <FieldDateRangeInput
@@ -222,6 +248,13 @@ export class BookingDatesFormComponent extends Component {
                   bookingDatesRequired(startDateErrorMessage, endDateErrorMessage)
                 )}
                 disabled={fetchLineItemsInProgress}
+              />
+
+              <FieldTimeRange 
+                nameSelectStart="selectStart"
+                nameSelectEnd="selectEnd"
+                bookingDates={this.state.bookingDates} 
+                onChangeTime={this.handleChangeTime}
               />
 
               {bookingInfoMaybe}
