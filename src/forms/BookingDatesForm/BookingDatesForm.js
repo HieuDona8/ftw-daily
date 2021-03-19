@@ -65,11 +65,12 @@ export class BookingDatesFormComponent extends Component {
   // In case you add more fields to the form, make sure you add
   // the values here to the bookingData object.
   handleOnChange(formValues, form) {    
-    const { startDate, endDate, selectStart, selectEnd } =
+    const { startDate, endDate } =
       formValues.values && formValues.values.bookingDates ? formValues.values.bookingDates : {};
     const listingId = this.props.listingId;
     const isOwnListing = this.props.isOwnListing;
     const currentUserID = this.props.currentUser ? this.props.currentUser.id.uuid : undefined;
+    const {selectStart, selectEnd} = formValues.values;
 
     if(startDate && moment(startDate).startOf('day').isSame(moment().startOf('day'))){
       const currentHour = moment().hours();
