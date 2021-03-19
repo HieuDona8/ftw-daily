@@ -270,6 +270,8 @@
   "EditListingTeacherWizard.tabLabelLocation": "Location",
   "EditListingTeacherWizard.tabLabelPricing": "Pricing",
   "EditListingTeacherWizard.tabLabelAvailability": "Availability",
+  "EditListingTeacherWizard.saveNewAvailability": "Public Lising",
+  "EditListingTeacherWizard.saveEditAvailability": "Save Availability",
   "EditListingGeneralForm.subjectsRequired": "You need to check your subjects",
   "EditListingGeneralForm.levelsRequired": "You need to check the levels, you can teach",
   "EditListingGeneralForm.hourRequired": "You need to add hours",

@@ -193,8 +193,8 @@ const EditListingTeacherWizardTab = props => {
     }
     case AVAILABILITY: {
       const submitButtonTranslationKey = isNewListingFlow
-        ? 'EditListingWizard.saveNewAvailability'
-        : 'EditListingWizard.saveEditAvailability';
+        ? 'EditListingTeacherWizard.saveNewAvailability'
+        : 'EditListingTeacherWizard.saveEditAvailability';
       return (
         <EditListingAvailabilityPanel
           {...panelProps(AVAILABILITY)}

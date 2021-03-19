@@ -52,14 +52,16 @@ const SectionGeneral = props => {
         <h2 className={css.descriptionTitle}>
           <FormattedMessage id="ListingTeacherPage.generalTeaching" />
         </h2>
+        <label>Type teaching:</label>
         <p className={css.description}>
-          {richText(generalService.data.numberHour, {
+          {richText(generalService.data.timeType, {
             longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS_IN_DESCRIPTION,
             longWordClass: css.longWord,
           })}
         </p>
+        <label>Number hours: </label>
         <p className={css.description}>
-          {richText(generalService.data.timeType, {
+          {richText(generalService.data.numberHour, {
             longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS_IN_DESCRIPTION,
             longWordClass: css.longWord,
           })}
