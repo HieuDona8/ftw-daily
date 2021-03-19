@@ -15,12 +15,13 @@ export const HEADING_DECLINED = 'declined';
 export const HEADING_CANCELED = 'canceled';
 export const HEADING_DELIVERED = 'deliveded';
 
-const createListingLink = (listingId, label, listingDeleted, searchParams = {}, className = '') => {
+const createListingLink = (listingId, label, listingDeleted, typeListing,searchParams = {}, className = '') => {
+  const redirectPage = typeListing === 'teacher' ? 'ListingTeacherPage' : 'ListingPage';
   if (!listingDeleted) {
     const params = { id: listingId, slug: createSlug(label) };
     const to = { search: stringify(searchParams) };
     return (
-      <NamedLink className={className} name="ListingPage" params={params} to={to}>
+      <NamedLink className={className} name={redirectPage} params={params} to={to}>
         {label}
       </NamedLink>
     );
@@ -103,13 +104,14 @@ const PanelHeading = props => {
     listingTitle,
     listingDeleted,
     isCustomerBanned,
+    typeListing,
   } = props;
 
   const isCustomer = props.transactionRole === 'customer';
 
   const defaultRootClassName = isCustomer ? css.headingOrder : css.headingSale;
   const titleClasses = classNames(rootClassName || defaultRootClassName, className);
-  const listingLink = createListingLink(listingId, listingTitle, listingDeleted);
+  const listingLink = createListingLink(listingId, listingTitle, listingDeleted, typeListing);
 
   switch (panelHeadingState) {
     case HEADING_ENQUIRED:

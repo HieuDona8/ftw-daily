@@ -7,7 +7,7 @@ import { dateFromAPIToLocalNoon } from '../../util/dates';
 import css from './BookingBreakdown.module.css';
 
 const BookingPeriod = props => {
-  const { startDate, endDate, dateType } = props;
+  const { startDate, endDate, dateType, displayStart, displayEnd } = props;
 
   const timeFormatOptions =
     dateType === DATE_TYPE_DATE
@@ -38,6 +38,17 @@ const BookingPeriod = props => {
           <div className={css.itemLabel}>
             <FormattedDate value={startDate} {...dateFormatOptions} />
           </div>
+          {
+            displayStart &&
+            <div>
+              <div className={css.itemLabel}>
+                <label>Time Start</label>
+              </div>
+              <div>
+                {moment(displayStart).format("HH:mm")}
+              </div>
+            </div>
+          }          
         </div>
 
         <div className={css.bookingPeriodSectionRigth}>
@@ -50,6 +61,17 @@ const BookingPeriod = props => {
           <div className={css.itemLabel}>
             <FormattedDate value={endDate} {...dateFormatOptions} />
           </div>
+          {
+            displayEnd &&
+            <div>
+              <div className={css.itemLabel}>
+                <label>Time End</label>
+              </div>
+              <div>
+                {moment(displayEnd).format("HH:mm")}
+              </div>
+            </div>
+          }
         </div>
       </div>
     </>
@@ -73,7 +95,7 @@ const LineItemBookingPeriod = props => {
   return (
     <>
       <div className={css.lineItem}>
-        <BookingPeriod startDate={localStartDate} endDate={endDay} dateType={dateType} />
+        <BookingPeriod startDate={localStartDate} endDate={endDay} dateType={dateType} displayStart={displayStart} displayEnd={displayEnd} />
       </div>
       <hr className={css.totalDivider} />
     </>

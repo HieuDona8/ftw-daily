@@ -1,0 +1,14 @@
+@import '../../styles/propertySets.css';
+
+.fieldRoot {
+}
+
+
+.timeContainer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.timeItem {
+    width: calc(50% - 12px);
+}

@@ -184,7 +184,7 @@ export class CheckoutPageComponent extends Component {
     if (shouldFetchSpeculatedTransaction) {
       const listingId = pageData.listing.id;
       const transactionId = tx ? tx.id : null;
-      const { bookingStart, bookingEnd } = pageData.bookingDates;
+      const { bookingStart, bookingEnd, bookingDisplayEnd, bookingDisplayStart } = pageData.bookingDates;
       const isFirstBooking = pageData.isFirstBooking;
       const currentUserID = pageData.currentUser ? pageData.currentUser.id.uuid : null;
 
@@ -201,6 +201,8 @@ export class CheckoutPageComponent extends Component {
           listingId,
           bookingStart: bookingStartForAPI,
           bookingEnd: bookingEndForAPI,
+          bookingDisplayEnd,
+          bookingDisplayStart
         },
         isFirstBooking,
         currentUserID,
@@ -387,6 +389,8 @@ export class CheckoutPageComponent extends Component {
       listingId: pageData.listing.id,
       bookingStart: tx.booking.attributes.start,
       bookingEnd: tx.booking.attributes.end,
+      bookingDisplayStart: pageData.bookingDates.bookingDisplayStart,
+      bookingDisplayEnd: pageData.bookingDates.bookingDisplayEnd,
       ...optionalPaymentParams,
     };
 

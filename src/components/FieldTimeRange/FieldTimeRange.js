@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import * as moment from 'moment';
 import { Field } from 'react-final-form';
+import css from './FieldTimeRange.module.css';
+import classNames from 'classnames';
 
 const FieldTimeRange = (props) => {
     const {onChangeTime, nameSelectStart, nameSelectEnd} = props;
@@ -45,8 +47,8 @@ const FieldTimeRange = (props) => {
     const render = () => {
         const {arrHourStart, arrHourEnd} = startDate ? onInitRangeStart(startDate) : {};
         return (
-            <div>
-                <div>
+            <div className={classNames(css.timeContainer)}>
+                <div className={classNames(css.timeItem)}>
                     <label>Start hour</label>
                     <Field name={nameSelectStart} component="select">
                         { 
@@ -57,7 +59,8 @@ const FieldTimeRange = (props) => {
                         }  
                     </Field>
                 </div>
-                <div>
+                <div className={classNames(css.timeItem)}>
+                    <label>End hour</label>
                     <Field name={nameSelectEnd} component="select">
                         { 
                             arrHourEnd &&

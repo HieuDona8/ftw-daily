@@ -3,7 +3,7 @@ import { string, bool, arrayOf, array, func } from 'prop-types';
 import { compose } from 'redux';
 import { Form as FinalForm, FormSpy } from 'react-final-form';
 import classNames from 'classnames';
-import moment from 'moment';
+import * as moment from 'moment';
 import config from '../../config';
 import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
 import { required, bookingDatesRequired, composeValidators } from '../../util/validators';
@@ -36,7 +36,15 @@ export class BookingDatesFormComponent extends Component {
   // focus on that input, otherwise continue with the
   // default handleSubmit function.
   handleFormSubmit(e) {
+    const {selectEnd, selectStart} = e || {};
     const { startDate, endDate } = e.bookingDates || {};
+    const bookingDisplayStartDate = moment(startDate);
+    const bookingDisplayEndDate = moment(endDate);
+    bookingDisplayStartDate.hours(Number(selectStart.split(':')[0]));
+    bookingDisplayStartDate.minutes(Number(selectStart.split(':')[1]));
+    bookingDisplayEndDate.hours(Number(selectEnd.split(':')[0]));
+    bookingDisplayEndDate.minutes(Number(selectEnd.split(':')[1]));
+
     if (!startDate) {
       e.preventDefault();
       this.setState({ focusedInput: START_DATE });
@@ -44,7 +52,11 @@ export class BookingDatesFormComponent extends Component {
       e.preventDefault();
       this.setState({ focusedInput: END_DATE });
     } else {
-      this.props.onSubmit(e);
+      this.props.onSubmit({
+        bookingDisplayStart: bookingDisplayStartDate.toDate(),
+        bookingDisplayEnd: bookingDisplayEndDate.toDate(),
+        ...e
+      });
     }
   }
 
@@ -120,6 +132,7 @@ export class BookingDatesFormComponent extends Component {
       <FinalForm
         {...rest}
         unitPrice={unitPrice}
+        initialValues={{selectStart: "00:00", selectEnd:"00:00"}}
         onSubmit={this.handleFormSubmit}
         render={fieldRenderProps => {
           const {

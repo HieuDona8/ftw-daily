@@ -212,6 +212,7 @@ export class TransactionPanelComponent extends Component {
     const isProviderLoaded = !!currentProvider.id;
     const isProviderBanned = isProviderLoaded && currentProvider.attributes.banned;
     const isProviderDeleted = isProviderLoaded && currentProvider.attributes.deleted;
+    const { typeListing } = currentTransaction.listing.attributes.publicData || {}
 
     const stateDataFn = tx => {
       if (txIsEnquired(tx)) {
@@ -364,6 +365,7 @@ export class TransactionPanelComponent extends Component {
               listingId={currentListing.id && currentListing.id.uuid}
               listingTitle={listingTitle}
               listingDeleted={listingDeleted}
+              typeListing={typeListing}
             />
 
             <div className={css.bookingDetailsMobile}>
