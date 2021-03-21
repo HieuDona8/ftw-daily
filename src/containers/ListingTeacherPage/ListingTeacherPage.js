@@ -101,7 +101,6 @@ export class ListingTeacherPageComponent extends Component {
     const listing = getListing(listingId);
 
     const { bookingDates, bookingDisplayStart, bookingDisplayEnd, ...bookingData } = values;
-    const { isFirstBooking } = lineItems[2] ? lineItems[2] : {};
 
     const initialValues = {
       listing,
@@ -113,7 +112,6 @@ export class ListingTeacherPageComponent extends Component {
         bookingDisplayEnd,
       },
       confirmPaymentError: null,
-      isFirstBooking
     };
 
     const saveToSessionStorage = !this.props.currentUser;

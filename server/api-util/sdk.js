@@ -143,3 +143,17 @@ exports.integrationSdk = flexIntegrationSdk.createInstance({
 exports.createUUID = (id) => {
   return new flexIntegrationSdk.types.UUID(id);
 };
+
+exports.checkFirstBooking = (arrBooking) => {
+  if(arrBooking.length === 0) return true;
+  return arrBooking.every((item) => {
+    return [
+      'transition/enquire', 
+      'transition/request-payment', 
+      'transition/request-payment-after-enquiry', 
+      'transition/expire-payment', 
+      'transition/decline',
+      'transition/expire'
+    ].includes(item.attributes.lastTransition)
+  })
+}

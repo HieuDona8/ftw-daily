@@ -142,7 +142,6 @@ export class CheckoutPageComponent extends Component {
       fetchStripeCustomer,
       history,
       currentUser,
-      isFirstBooking,
     } = this.props;
 
     // Fetch currentUser with stripeCustomer entity
@@ -159,12 +158,12 @@ export class CheckoutPageComponent extends Component {
     const hasDataInProps = !!(bookingData && bookingDates && listing) && hasNavigatedThroughLink;
     if (hasDataInProps) {
       // Store data only if data is passed through props and user has navigated through a link.
-      storeData(bookingData, bookingDates, listing, transaction, isFirstBooking, currentUser, STORAGE_KEY);
+      storeData(bookingData, bookingDates, listing, transaction, currentUser, STORAGE_KEY);
     }
 
     // NOTE: stored data can be empty if user has already successfully completed transaction.
     const pageData = hasDataInProps
-      ? { bookingData, bookingDates, listing, transaction, isFirstBooking, currentUser }
+      ? { bookingData, bookingDates, listing, transaction, currentUser }
       : storedData(STORAGE_KEY);
 
     // Check if a booking is already created according to stored data.
@@ -185,7 +184,6 @@ export class CheckoutPageComponent extends Component {
       const listingId = pageData.listing.id;
       const transactionId = tx ? tx.id : null;
       const { bookingStart, bookingEnd, bookingDisplayEnd, bookingDisplayStart } = pageData.bookingDates;
-      const isFirstBooking = pageData.isFirstBooking;
       const currentUserID = pageData.currentUser ? pageData.currentUser.id.uuid : null;
 
       // Convert picked date to date that will be converted on the API as
@@ -204,7 +202,6 @@ export class CheckoutPageComponent extends Component {
           bookingDisplayEnd,
           bookingDisplayStart
         },
-        isFirstBooking,
         currentUserID,
         transactionId
       );
@@ -232,7 +229,6 @@ export class CheckoutPageComponent extends Component {
       saveAfterOnetimePayment,
     } = handlePaymentParams;
     const storedTx = ensureTransaction(pageData.transaction);
-    const isFirstBooking = pageData.isFirstBooking;
     const currentUserID = pageData.currentUser ? pageData.currentUser.id.uuid : undefined;
 
     const ensuredCurrentUser = ensureCurrentUser(currentUser);
@@ -261,7 +257,7 @@ export class CheckoutPageComponent extends Component {
         storedTx.attributes.protectedData && storedTx.attributes.protectedData.stripePaymentIntents;
 
       // If paymentIntent exists, order has been initiated previously.
-      return hasPaymentIntents ? Promise.resolve(storedTx) : onInitiateOrder(fnParams, isFirstBooking, currentUserID, storedTx.id);
+      return hasPaymentIntents ? Promise.resolve(storedTx) : onInitiateOrder(fnParams, currentUserID, storedTx.id);
     };
 
     // Step 2: pay using Stripe SDK
@@ -930,7 +926,6 @@ const mapStateToProps = state => {
     transaction,
     initiateOrderError,
     confirmPaymentError,
-    isFirstBooking
   } = state.CheckoutPage;
 
   const { currentUser } = state.user;
@@ -951,16 +946,15 @@ const mapStateToProps = state => {
     confirmPaymentError,
     paymentIntent,
     retrievePaymentIntentError,
-    isFirstBooking
   };
 };
 
 const mapDispatchToProps = dispatch => ({
   dispatch,
-  fetchSpeculatedTransaction: (params, isFirstBooking, currentUserID, transactionId) =>
-    dispatch(speculateTransaction(params, isFirstBooking, currentUserID, transactionId)),
+  fetchSpeculatedTransaction: (params, currentUserID, transactionId) =>
+    dispatch(speculateTransaction(params, currentUserID, transactionId)),
   fetchStripeCustomer: () => dispatch(stripeCustomer()),
-  onInitiateOrder: (params, isFirstBooking, currentUserID, transactionId) => dispatch(initiateOrder(params, isFirstBooking, currentUserID, transactionId)),
+  onInitiateOrder: (params, currentUserID, transactionId) => dispatch(initiateOrder(params, currentUserID, transactionId)),
   onRetrievePaymentIntent: params => dispatch(retrievePaymentIntent(params)),
   onConfirmCardPayment: params => dispatch(confirmCardPayment(params)),
   onConfirmPayment: params => dispatch(confirmPayment(params)),

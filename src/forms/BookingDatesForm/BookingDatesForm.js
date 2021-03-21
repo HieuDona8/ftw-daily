@@ -181,12 +181,22 @@ export class BookingDatesFormComponent extends Component {
           // so we need to pass only booking data that is needed otherwise
           // If you have added new fields to the form that will affect to pricing,
           // you need to add the values to handleOnChange function
+
+          const displayStart = moment(startDate);
+          const displayEnd = moment(endDate);
+          displayStart.hours(Number(values.selectStart.split(':')[0]));
+          displayStart.minutes(Number(values.selectStart.split(':')[1]));
+          displayEnd.hours(Number(values.selectEnd.split(':')[0]));
+          displayEnd.minutes(Number(values.selectEnd.split(':')[1]))
+
           const bookingData =
             startDate && endDate
               ? {
                   unitType,
                   startDate,
                   endDate,
+                  displayStart,
+                  displayEnd
                 }
               : null;
 

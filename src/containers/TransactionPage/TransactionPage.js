@@ -411,8 +411,8 @@ const mapDispatchToProps = dispatch => {
       dispatch(sendReview(role, tx, reviewRating, reviewContent)),
     callSetInitialValues: (setInitialValues, values) => dispatch(setInitialValues(values)),
     onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
-    onFetchTransactionLineItems: (bookingData, listingId, isOwnListing) =>
-      dispatch(fetchTransactionLineItems(bookingData, listingId, isOwnListing)),
+    onFetchTransactionLineItems: (bookingData, listingId, isOwnListing, currentUserID) =>
+      dispatch(fetchTransactionLineItems(bookingData, listingId, isOwnListing, currentUserID)),
   };
 };
 

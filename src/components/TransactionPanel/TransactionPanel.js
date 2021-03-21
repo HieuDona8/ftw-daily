@@ -439,6 +439,7 @@ export class TransactionPanelComponent extends Component {
               />
               {stateData.showBookingPanel ? (
                 <BookingPanel
+                  currentUser={currentUser}
                   className={css.bookingPanel}
                   titleClassName={css.bookingTitle}
                   isOwnListing={false}
