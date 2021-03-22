@@ -702,6 +702,7 @@
   "PriceFilterForm.cancel": "Cancel",
   "PriceFilterForm.clear": "Clear",
   "PriceFilterForm.label": "Price range:",
+  "HourFilterForm.label": "Hour range:",
   "PriceFilterForm.submit": "Apply",
   "PrivacyPolicyPage.heading": "Saunatime Privacy Policy",
   "PrivacyPolicyPage.privacyTabTitle": "Privacy Policy",

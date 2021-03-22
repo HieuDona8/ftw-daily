@@ -115,6 +115,7 @@ const EditListingGeneralPanel = props => {
             description,
             publicData: { 
               ...general,
+              numberHour: Number(general.numberHour),
               typeListing
             },
           };

@@ -32,7 +32,7 @@ const parseMax = (max, currentMin) => value => {
 
 // PriceFilterForm component
 const PriceFilterFormComponent = props => {
-  const { liveEdit, onChange, onSubmit, onCancel, onClear, ...rest } = props;
+  const { liveEdit, onChange, onSubmit, onCancel, onClear, label, ...rest } = props;
 
   if (liveEdit && !onChange) {
     throw new Error('PriceFilterForm: if liveEdit is true you need to provide onChange function');
@@ -123,7 +123,11 @@ const PriceFilterFormComponent = props => {
           >
             <div className={css.contentWrapper}>
               <span className={css.label}>
-                <FormattedMessage id="PriceFilterForm.label" />
+                {
+                  label === 'Hour Range' ?
+                  <FormattedMessage id="HourFilterForm.label" /> :
+                  <FormattedMessage id="PriceFilterForm.label" />
+                }
               </span>
               <div className={css.inputsWrapper}>
                 <Field

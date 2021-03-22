@@ -138,6 +138,15 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
       : {};
   };
 
+  const hourSearchParams = hourParam => {
+    const values = hourParam ? hourParam.split(',') : [];
+    return hourParam && values.length === 2
+    ? {
+        pub_numberHour: [values[0], Number(values[1]) + 1].join(','),
+      }
+    : {};
+  }
+
   const datesSearchParams = datesParam => {
     const values = datesParam ? datesParam.split(',') : [];
     const hasValues = datesParam && values.length === 2;
@@ -156,14 +165,16 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
       : {};
   };
 
-  const { perPage, price, dates, ...rest } = searchParams;
+  const { perPage, price, dates, pub_numberHour,...rest } = searchParams;
   const priceMaybe = priceSearchParams(price);
   const datesMaybe = datesSearchParams(dates);
+  const hourMaybe = hourSearchParams(pub_numberHour)
 
   const params = {
     ...rest,
     ...priceMaybe,
     ...datesMaybe,
+    ...hourMaybe,
     per_page: perPage,
   };
 

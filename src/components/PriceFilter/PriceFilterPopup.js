@@ -145,12 +145,18 @@ class PriceFilterPopup extends Component {
     const hasInitialValues = initialValues && hasValue(minPrice) && hasValue(maxPrice);
 
     const currentLabel = hasInitialValues
-      ? intl.formatMessage(
+      ? (label === "Hour Range" ? 
+        intl.formatMessage(
           { id: 'PriceFilter.labelSelectedButton' },
           {
-            minPrice: formatCurrencyMajorUnit(intl, currencyConfig.currency, minPrice),
-            maxPrice: formatCurrencyMajorUnit(intl, currencyConfig.currency, maxPrice),
-          }
+            minPrice: minPrice + ' H',
+            maxPrice: maxPrice + ' H'
+          }) : intl.formatMessage(
+            { id: 'PriceFilter.labelSelectedButton' },
+            {
+              minPrice: formatCurrencyMajorUnit(intl, currencyConfig.currency, minPrice),
+              maxPrice: formatCurrencyMajorUnit(intl, currencyConfig.currency, maxPrice),
+            })
         )
       : label
       ? label
@@ -187,6 +193,7 @@ class PriceFilterPopup extends Component {
           step={step}
           showAsPopup
           isOpen={this.state.isOpen}
+          label={label}
         />
       </div>
     );

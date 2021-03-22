@@ -61,6 +61,22 @@ export const filters = [
     },
   },
   {
+    id: 'numberHour',
+    label: 'Hour Range',
+    type: 'PriceFilter',
+    group: 'primary',
+    // Note: PriceFilter is fixed filter,
+    // you can't change "queryParamNames: ['price'],"
+    queryParamNames: ['pub_numberHour'],
+    // Price filter configuration
+    // Note: unlike most prices this is not handled in subunits
+    config: {
+      min: 1,
+      max: 8,
+      step: 1,
+    },
+  },
+  {
     id: 'keyword',
     label: 'Keyword',
     type: 'KeywordFilter',
@@ -144,57 +160,6 @@ export const filters = [
     },
   },
   {
-    id: 'numberHour',
-    label: 'Hour Teaching',
-    type: 'SelectSingleFilter',
-    group: 'primary',
-    queryParamNames: ['pub_numberHour'],
-    config: {
-      // Optional modes: 'has_all', 'has_any'
-      // https://www.sharetribe.com/api-reference/marketplace.html#extended-data-filtering
-      searchMode: 'has_any',
-
-      // "key" is the option you see in Flex Console.
-      // "label" is set here for this web app's UI only.
-      // Note: label is not added through the translation files
-      // to make filter customizations a bit easier.
-      options: [
-        {
-          key: '1',
-          label: '1 Hours',
-        },
-        {
-          key: '2',
-          label: '2 Hours',
-        },
-        {
-          key: '3',
-          label: '3 Hours',
-        },
-        {
-          key: '4',
-          label: '4 Hours',
-        },
-        {
-          key: '5',
-          label: '5 Hours',
-        },
-        {
-          key: '6',
-          label: '6 Hours',
-        },
-        {
-          key: '7',
-          label: '7 Hours',
-        },
-        {
-          key: '8',
-          label: '8 Hours',
-        }
-      ],
-    },
-  },
-  {
     id: 'subjects',
     label: 'subjects',
     type: 'SelectMultipleFilter',
@@ -203,7 +168,7 @@ export const filters = [
     config: {
       // Optional modes: 'has_all', 'has_any'
       // https://www.sharetribe.com/api-reference/marketplace.html#extended-data-filtering
-      searchMode: 'has_all',
+      searchMode: 'has_any',
 
       // "key" is the option you see in Flex Console.
       // "label" is set here for this web app's UI only.
@@ -234,7 +199,7 @@ export const filters = [
     config: {
       // Optional modes: 'has_all', 'has_any'
       // https://www.sharetribe.com/api-reference/marketplace.html#extended-data-filtering
-      searchMode: 'has_all',
+      searchMode: 'has_any',
 
       // "key" is the option you see in Flex Console.
       // "label" is set here for this web app's UI only.
