@@ -5,12 +5,13 @@
  */
 import React, { Component } from 'react';
 import { bool, func, object, string } from 'prop-types';
-import { Form as FinalForm } from 'react-final-form';
+import { Form as FinalForm, FormSpy } from 'react-final-form';
 import classNames from 'classnames';
 import config from '../../config';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { ensurePaymentMethodCard } from '../../util/data';
+import { OnChange, OnBlur } from 'react-final-form-listeners'
 
 import {
   Form,
@@ -20,6 +21,7 @@ import {
   IconSpinner,
   SavedCardDetails,
   StripePaymentAddress,
+  SecondaryButton
 } from '../../components';
 import css from './StripePaymentForm.module.css';
 
@@ -326,8 +328,12 @@ class StripePaymentForm extends Component {
       invalid,
       handleSubmit,
       form,
+      values,
       hasHandledCardPayment,
       defaultPaymentMethod,
+      onChangeVoucher,
+      voucherInfo,
+      onExitVoucher
     } = formRenderProps;
 
     this.finalFormAPI = form;
@@ -366,6 +372,14 @@ class StripePaymentForm extends Component {
       id: 'StripePaymentForm.billingDetailsNamePlaceholder',
     });
 
+    const billingDetailsVoucherLabel = intl.formatMessage({
+      id: 'StripePaymentForm.billingDetailsVoucherLabel',
+    });
+
+    const billingDetailsVoucherPlaceholder = intl.formatMessage({
+      id: 'StripePaymentForm.billingDetailsVoucherPlaceholder',
+    });
+
     const messagePlaceholder = intl.formatMessage(
       { id: 'StripePaymentForm.messagePlaceholder' },
       { name: authorDisplayName }
@@ -379,6 +393,11 @@ class StripePaymentForm extends Component {
       { id: 'StripePaymentForm.messageLabel' },
       { messageOptionalText: messageOptionalText }
     );
+
+    const exitVoucher = () => {
+      form.change('voucher', '');
+      return onExitVoucher();
+    }
 
     // Asking billing address is recommended in PaymentIntent flow.
     // In CheckoutPage, we send name and email as billing details, but address only if it exists.
@@ -453,6 +472,45 @@ class StripePaymentForm extends Component {
           </p>
         ) : null}
 
+        <div className={css.containerVoucher}>
+          <div className={css.inputVoucher}>
+            <FieldTextInput
+              type="text"
+              id="voucher"
+              name="voucher"
+              label={billingDetailsVoucherLabel}
+              placeholder={billingDetailsVoucherPlaceholder}
+            />
+            {/* <OnBlur name='voucher'>
+              {() => exitVoucher()}
+            </OnBlur> */}
+          </div>
+          <div className={css.checkVoucher}>
+            <SecondaryButton
+              type="button"
+              className={css.btnCheckVoucher}
+              disabled={(!values.voucher || values.voucher.trim() === '')}
+              onClick={()=> onChangeVoucher(values.voucher)}
+            >
+              <FormattedMessage id="StripePaymentForm.checkVoucher" />
+            </SecondaryButton>
+
+            <SecondaryButton
+              type="button"
+              className={css.btnCheckVoucher}
+              disabled={(!values.voucher || values.voucher.trim() === '')}
+              onClick={()=> exitVoucher()}
+            >
+              <FormattedMessage id="StripePaymentForm.clearVoucher" />
+            </SecondaryButton>
+          </div>
+          
+        </div>
+        {
+          voucherInfo.code && !voucherInfo.valid &&
+          <div className={css.ValidationError}>
+          <FormattedMessage id="StripePaymentForm.invalidVoucher" /></div>
+        }
         {initiateOrderError ? (
           <span className={css.errorMessage}>{initiateOrderError.message}</span>
         ) : null}

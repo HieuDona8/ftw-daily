@@ -1,6 +1,6 @@
 import pick from 'lodash/pick';
 import config from '../../config';
-import { initiatePrivileged, transitionPrivileged } from '../../util/api';
+import { initiatePrivileged, transitionPrivileged, checkVoucherApi } from '../../util/api';
 import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import {
@@ -161,7 +161,7 @@ export const stripeCustomerError = e => ({
 
 /* ================ Thunks ================ */
 
-export const initiateOrder = (orderParams, currentUserID, transactionId) => (dispatch, getState, sdk) => {
+export const initiateOrder = (orderParams, currentUserID, transactionId, voucherCode = null) => (dispatch, getState, sdk) => {
   dispatch(initiateOrderRequest());
 
   // If we already have a transaction ID, we should transition, not
@@ -225,7 +225,7 @@ export const initiateOrder = (orderParams, currentUserID, transactionId) => (dis
       .catch(handleError);
   } else if (isPrivilegedTransition) {
     // initiate privileged
-    return initiatePrivileged({ isSpeculative: false, bookingData, bodyParams, queryParams, currentUserID })
+    return initiatePrivileged({ isSpeculative: false, bookingData, bodyParams, queryParams, currentUserID, voucherCode})
       .then(handleSucces)
       .catch(handleError);
   } else {
@@ -391,3 +391,7 @@ export const stripeCustomer = () => (dispatch, getState, sdk) => {
       dispatch(stripeCustomerError(storableError(e)));
     });
 };
+
+export const checkVoucher = (voucher) => {
+  return checkVoucherApi(voucher)
+}

@@ -52,6 +52,7 @@ import {
   stripeCustomer,
   confirmPayment,
   sendMessage,
+  checkVoucher
 } from './CheckoutPage.duck';
 import { storeData, storedData, clearData } from './CheckoutPageSessionHelpers';
 import css from './CheckoutPage.module.css';
@@ -101,6 +102,12 @@ export class CheckoutPageComponent extends Component {
       pageData: {},
       dataLoaded: false,
       submitting: false,
+      voucherInfo: {
+        code: null,
+        type: null, 
+        percent_off: null,
+        valid: null
+      }
     };
     this.stripe = null;
 
@@ -108,6 +115,8 @@ export class CheckoutPageComponent extends Component {
     this.loadInitialData = this.loadInitialData.bind(this);
     this.handlePaymentIntent = this.handlePaymentIntent.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChangeVoucher = this.handleChangeVoucher.bind(this);
+    this.onExitVoucher = this.onExitVoucher.bind(this);
   }
 
   componentDidMount() {
@@ -257,7 +266,9 @@ export class CheckoutPageComponent extends Component {
         storedTx.attributes.protectedData && storedTx.attributes.protectedData.stripePaymentIntents;
 
       // If paymentIntent exists, order has been initiated previously.
-      return hasPaymentIntents ? Promise.resolve(storedTx) : onInitiateOrder(fnParams, currentUserID, storedTx.id);
+      const {code: voucherCode} = this.state.voucherInfo || {};
+
+      return hasPaymentIntents ? Promise.resolve(storedTx) : onInitiateOrder(fnParams, currentUserID, storedTx.id, voucherCode);
     };
 
     // Step 2: pay using Stripe SDK
@@ -498,6 +509,46 @@ export class CheckoutPageComponent extends Component {
     }
   }
 
+  handleChangeVoucher(voucherCode) {
+    const code = voucherCode.trim();
+    if(!code || code === '') return;
+    checkVoucher(code).then(voucher => {
+      const valid = voucher.valid;
+      if(valid) {
+        const {type, percent_off} = voucher.discount || {}
+        this.setState({
+          voucherInfo: {
+            code: code,
+            type, 
+            percent_off,
+            valid
+          }
+        })
+      } else {
+        this.setState({
+          voucherInfo: {
+            code: code,
+            type: null, 
+            percent_off: null,
+            valid
+          }
+        })
+      }
+      
+    });
+  }
+
+  onExitVoucher() {
+    this.setState({
+      voucherInfo: {
+        code: null,
+        type: null, 
+        percent_off: null,
+        valid: null
+      }
+    })
+  }
+
   render() {
     const {
       scrollingDisabled,
@@ -600,6 +651,7 @@ export class CheckoutPageComponent extends Component {
           transaction={tx}
           booking={txBooking}
           dateType={DATE_TYPE_DATE}
+          voucherInfo={this.state.voucherInfo}
         />
       ) : null;
 
@@ -755,7 +807,7 @@ export class CheckoutPageComponent extends Component {
     // e.g. {country: 'FI'}
 
     const initalValuesForStripePayment = { name: userName };
-
+    
     return (
       <Page {...pageProps}>
         {topbar}
@@ -819,6 +871,9 @@ export class CheckoutPageComponent extends Component {
                   }
                   paymentIntent={paymentIntent}
                   onStripeInitialized={this.onStripeInitialized}
+                  onChangeVoucher={this.handleChangeVoucher}
+                  onExitVoucher={this.onExitVoucher}
+                  voucherInfo={this.state.voucherInfo}
                 />
               ) : null}
               {isPaymentExpired ? (
@@ -954,7 +1009,7 @@ const mapDispatchToProps = dispatch => ({
   fetchSpeculatedTransaction: (params, currentUserID, transactionId) =>
     dispatch(speculateTransaction(params, currentUserID, transactionId)),
   fetchStripeCustomer: () => dispatch(stripeCustomer()),
-  onInitiateOrder: (params, currentUserID, transactionId) => dispatch(initiateOrder(params, currentUserID, transactionId)),
+  onInitiateOrder: (params, currentUserID, transactionId, voucherCode) => dispatch(initiateOrder(params, currentUserID, transactionId, voucherCode)),
   onRetrievePaymentIntent: params => dispatch(retrievePaymentIntent(params)),
   onConfirmCardPayment: params => dispatch(confirmCardPayment(params)),
   onConfirmPayment: params => dispatch(confirmPayment(params)),

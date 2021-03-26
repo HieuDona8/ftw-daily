@@ -4,6 +4,7 @@ const Decimal = require('decimal.js');
 const log = require('../log');
 const sharetribeSdk = require('sharetribe-flex-sdk');
 const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
+const voucherify = require('voucherify')
 
 const CLIENT_ID = process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID;
 const CLIENT_SECRET = process.env.SHARETRIBE_SDK_CLIENT_SECRET;
@@ -11,7 +12,14 @@ const USING_SSL = process.env.REACT_APP_SHARETRIBE_USING_SSL === 'true';
 const TRANSIT_VERBOSE = process.env.REACT_APP_SHARETRIBE_SDK_TRANSIT_VERBOSE === 'true';
 const INTEGRATION_CLIENT_ID = process.env.FLEX_INTEGRATION_CLIENT_ID;
 const INTEGRATION_CLIENT_SECRET = process.env.FLEX_INTEGRATION_CLIENT_SECRET;
+const APPLICATION_ID = process.env.VOUCHER_X_APP_ID;
+const APPLICATION_SECRETKEY = process.env.VOUCHER_X_APP_TOKEN
 
+const client = voucherify({
+  applicationId: APPLICATION_ID,
+  clientSecretKey: APPLICATION_SECRETKEY,
+  apiUrl: 'https://us1.api.voucherify.io'
+})
 // Application type handlers for JS SDK.
 //
 // NOTE: keep in sync with `typeHandlers` in `src/util/api.js`
@@ -156,4 +164,8 @@ exports.checkFirstBooking = (arrBooking) => {
       'transition/expire'
     ].includes(item.attributes.lastTransition)
   })
+}
+
+exports.redeemVoucher = (voucherCode) => {
+  return client.redemptions.redeem(voucherCode)
 }

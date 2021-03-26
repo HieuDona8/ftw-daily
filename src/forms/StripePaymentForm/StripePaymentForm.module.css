@@ -194,3 +194,31 @@
 .missingStripeKey {
   color: var(--failColor);
 }
+
+.containerVoucher {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.inputVoucher {
+  width: calc(50% - 12px);
+}
+
+.checkVoucher {
+  width: calc(50% - 12px);
+  display: flex;
+  align-items: flex-end;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btnCheckVoucher{
+  width: 48%;
+  min-height: 30%;
+  height: 45px;
+}
+
+.ValidationError{
+  color: red;
+}

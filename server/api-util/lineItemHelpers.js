@@ -150,6 +150,15 @@ exports.calculateTotalFromLineItems = lineItems => {
   return new Money(numericTotalPrice, unitPrice.currency);
 };
 
+exports.calculateTotalFromItemVoucher = (providerCommission, customerCommission) => {
+
+  const unitPrice = providerCommission.unitPrice;
+  const totalPrice = (Math.abs(providerCommission.percentage * providerCommission.unitPrice.amount) +
+   Math.abs(customerCommission.percentage * customerCommission.unitPrice.amount)) / 100;
+  const numericTotalPrice = convertDecimalJSToNumber(getAmountAsDecimalJS(new Money(totalPrice, unitPrice)));
+
+  return new Money(numericTotalPrice, unitPrice.currency);
+}
 /**
  * Calculates the total sum of lineTotals for given lineItems where `includeFor` includes `provider`
  * @param {*} lineItems

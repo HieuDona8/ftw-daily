@@ -10,6 +10,7 @@ import {
   propTypes,
   LINE_ITEM_CUSTOMER_COMMISSION,
   LINE_ITEM_PROVIDER_COMMISSION,
+  LINE_ITEM_CUSTOMER_VOUCHER
 } from '../../util/types';
 
 import LineItemBookingPeriod from './LineItemBookingPeriod';
@@ -23,8 +24,12 @@ import LineItemProviderCommissionRefundMaybe from './LineItemProviderCommissionR
 import LineItemRefundMaybe from './LineItemRefundMaybe';
 import LineItemTotalPrice from './LineItemTotalPrice';
 import LineItemUnknownItemsMaybe from './LineItemUnknownItemsMaybe';
+import Decimal from 'decimal.js';
 
 import css from './BookingBreakdown.module.css';
+import LineItemCustomerVoucherMaybe from './LineItemCustomerVoucherMaybe';
+import { types } from 'sharetribe-flex-sdk';
+const { Money } = types;
 
 export const BookingBreakdownComponent = props => {
   const {
@@ -36,10 +41,46 @@ export const BookingBreakdownComponent = props => {
     booking,
     intl,
     dateType,
+    voucherInfo
   } = props;
 
   const isCustomer = userRole === 'customer';
   const isProvider = userRole === 'provider';
+
+  if(
+    isCustomer && 
+    voucherInfo &&
+    voucherInfo.valid &&
+    (!transaction.attributes.lineItems[3] || 
+    (transaction.attributes.lineItems[3].percentage.toNumber() !== voucherInfo.percent_off))
+  ){
+    const itemProvider = transaction.attributes.lineItems.find(item => {
+      return item.code === LINE_ITEM_PROVIDER_COMMISSION
+    })
+    const itemCustomer = transaction.attributes.lineItems.find(item => {
+      return item.code === LINE_ITEM_CUSTOMER_COMMISSION
+    })
+    const maxPrice = Math.abs(itemProvider.lineTotal.amount) + Math.abs(itemCustomer.lineTotal.amount);
+    
+    const customerVoucher = {
+      code: LINE_ITEM_CUSTOMER_VOUCHER,
+      unitPrice: new Money(maxPrice, itemCustomer.lineTotal.currency),
+      lineTotal: new Money(-(voucherInfo.percent_off * maxPrice)/100, itemCustomer.lineTotal.currency),
+      percentage: new Decimal(voucherInfo.percent_off),
+      includeFor: ['customer'],
+      reversal: false
+    }
+    
+    transaction.attributes.payinTotal = new Money(transaction.attributes.payinTotal.amount + customerVoucher.lineTotal.amount, customerVoucher.lineTotal.currency);
+    transaction.attributes.lineItems = [
+      ...transaction.attributes.lineItems,
+      customerVoucher
+    ]
+  } else if(voucherInfo && !voucherInfo.valid && transaction.attributes.lineItems[3]){
+    const customerVoucher = transaction.attributes.lineItems[3];
+    transaction.attributes.payinTotal = new Money(transaction.attributes.payinTotal.amount - customerVoucher.lineTotal.amount, customerVoucher.lineTotal.currency);
+    transaction.attributes.lineItems.pop();
+  }
 
   const hasCommissionLineItem = transaction.attributes.lineItems.find(item => {
     const hasCustomerCommission = isCustomer && item.code === LINE_ITEM_CUSTOMER_COMMISSION;
@@ -121,6 +162,12 @@ export const BookingBreakdownComponent = props => {
       <LineItemProviderCommissionRefundMaybe
         transaction={transaction}
         isProvider={isProvider}
+        intl={intl}
+      />
+
+      <LineItemCustomerVoucherMaybe
+        transaction={transaction}
+        isCustomer={isCustomer}
         intl={intl}
       />
 

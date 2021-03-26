@@ -115,3 +115,20 @@ export const transitionPrivileged = body => {
 export const createUserWithIdp = body => {
   return post('/api/auth/create-user-with-idp', body);
 };
+
+export const checkVoucherApi = code => {
+  console.log('shosllslslsl, ', process.env.REACT_APP_VOUCHER_X_CLIENT_APPLICATION_ID)
+  const url = `https://us1.api.voucherify.io/client/v1/validate?code=${code}`;
+  const options = {
+    method: 'GET',
+    headers: {
+      'X-Client-Application-Id': process.env.REACT_APP_VOUCHER_X_CLIENT_APPLICATION_ID,
+      'X-Client-Token': process.env.REACT_APP_VOUCHER_X_CLIENT_TOKEN,
+      'Content-Type': 'application/json',
+      'origin': process.env.REACT_APP_VOUCHER_ORIGIN
+    }
+  };
+  return window.fetch(url, options).then(res => {
+    return res.json();
+  });
+}

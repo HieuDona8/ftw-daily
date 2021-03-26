@@ -1,4 +1,4 @@
-const { calculateQuantityFromDates, calculateTotalFromLineItems } = require('./lineItemHelpers');
+const { calculateQuantityFromDates, calculateTotalFromLineItems, calculateTotalFromItemVoucher } = require('./lineItemHelpers');
 const { types } = require('sharetribe-flex-sdk');
 const { Money } = types;
 const { integrationSdk } = require('../api-util/sdk');
@@ -28,13 +28,14 @@ const PROVIDER_COMMISSION_PERCENTAGE = -25;
  * @param {Object} bookingData
  * @returns {Array} lineItems
  */
-exports.transactionLineItems = (listing, bookingData, isFirstBooking) => {
+exports.transactionLineItems = (listing, bookingData, isFirstBooking, voucherDetail = null) => {
   const unitPrice = listing.attributes.price;
   const { startDate, endDate } = bookingData;
 
   //caculator commission customer
   const CUSTOMER_COMMISSION_PERCENTAGE = isFirstBooking ? 15 : 55;
-
+  
+  const {type, percent_off} = voucherDetail && voucherDetail.voucher.discount || {};
   /**
    * If you want to use pre-defined component and translations for printing the lineItems base price for booking,
    * you should use one of the codes:
@@ -67,7 +68,16 @@ exports.transactionLineItems = (listing, bookingData, isFirstBooking) => {
     isFirstBooking
   }
 
-  const lineItems = [booking, providerCommission, customerCommission];
+  const customerVoucher = {
+    code: 'line-item/customer-voucher',
+    unitPrice: calculateTotalFromItemVoucher(providerCommission, customerCommission),
+    percentage: -percent_off,
+    includeFor: ['customer'],
+  }
+
+  const lineItems = voucherDetail ? 
+    [booking, providerCommission, customerCommission, customerVoucher]: 
+    [booking, providerCommission, customerCommission];
 
   return lineItems;
 };

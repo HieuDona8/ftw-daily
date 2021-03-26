@@ -9,6 +9,7 @@ import {
   propTypes,
   LINE_ITEM_CUSTOMER_COMMISSION,
   LINE_ITEM_PROVIDER_COMMISSION,
+  LINE_ITEM_CUSTOMER_VOUCHER,
 } from '../../util/types';
 
 import css from './BookingBreakdown.module.css';
@@ -20,6 +21,7 @@ const { Money } = sdkTypes;
  */
 const lineItemsTotal = lineItems => {
   const amount = lineItems.reduce((total, item) => {
+    if(item.code ===  LINE_ITEM_CUSTOMER_VOUCHER) return total;
     return total.plus(item.lineTotal.amount);
   }, new Decimal(0));
   const currency = lineItems[0] ? lineItems[0].lineTotal.currency : config.currency;
