@@ -152,6 +152,10 @@ exports.createUUID = (id) => {
   return new flexIntegrationSdk.types.UUID(id);
 };
 
+exports.createSharetribeUUID = (id) => {
+  return new sharetribeSdk.types.UUID(id);
+};
+
 exports.checkFirstBooking = (arrBooking) => {
   if(arrBooking.length === 0) return true;
   return arrBooking.every((item) => {
@@ -168,4 +172,8 @@ exports.checkFirstBooking = (arrBooking) => {
 
 exports.redeemVoucher = (voucherCode) => {
   return client.redemptions.redeem(voucherCode)
+}
+
+exports.rollbackVoucher = (redemptionId) => {
+  return client.redemptions.rollback(redemptionId)
 }

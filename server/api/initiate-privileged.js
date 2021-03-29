@@ -8,6 +8,7 @@ module.exports = (req, res) => {
   const sdk = getSdk(req, res);
   let lineItems = null;
   const uuid = createUUID(currentUserID);
+  let redeemId = null;
 
   const arrayPromise = voucherCode ? 
     [sdk.listings.show({ id: listingId }), integrationSdk.transactions.query({customerId: uuid}), redeemVoucher(voucherCode)]:
@@ -19,6 +20,7 @@ module.exports = (req, res) => {
       lineItems = apiResponse[2] ? 
         transactionLineItems(listing, bookingData, isFirstBooking, apiResponse[2]): 
         transactionLineItems(listing, bookingData, isFirstBooking);
+      redeemId = apiResponse[2] && apiResponse[2].id || null;
       return getTrustedSdk(req);
     })
     .then(trustedSdk => {
@@ -28,6 +30,9 @@ module.exports = (req, res) => {
         ...bodyParams,
         params: {
           ...params,
+          protectedData: {
+            redeemId: redeemId
+          },
           lineItems,
         },
       };

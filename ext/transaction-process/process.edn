@@ -14,7 +14,8 @@
    [{:name :action/create-booking
      :config {:observe-availability? true}}
     {:name :action/privileged-set-line-items}
-    {:name :action/stripe-create-payment-intent}]
+    {:name :action/stripe-create-payment-intent}
+    {:name :action/update-protected-data}]
    :from :state/enquiry
    :to :state/pending-payment
    :privileged? true}
@@ -26,7 +27,8 @@
    [{:name :action/create-booking,
      :config {:observe-availability? true}}
     {:name :action/privileged-set-line-items}
-    {:name :action/stripe-create-payment-intent}],
+    {:name :action/stripe-create-payment-intent}
+    {:name :action/update-protected-data}],
    :to :state/pending-payment
    :privileged? true}
   ;;;;;;;;;;;;;;;;

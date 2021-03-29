@@ -13,7 +13,7 @@ import {
   TRANSITION_ACCEPT,
   TRANSITION_DECLINE,
 } from '../../util/transaction';
-import { transactionLineItems } from '../../util/api';
+import { rollbackVoucher, transactionLineItems } from '../../util/api';
 import * as log from '../../util/log';
 import {
   updatedEntities,
@@ -381,6 +381,7 @@ export const declineSale = id => (dispatch, getState, sdk) => {
   return sdk.transactions
     .transition({ id, transition: TRANSITION_DECLINE, params: {} }, { expand: true })
     .then(response => {
+      rollbackVoucher(id.uuid);
       dispatch(addMarketplaceEntities(response));
       dispatch(declineSaleSuccess());
       dispatch(fetchCurrentUserNotifications());

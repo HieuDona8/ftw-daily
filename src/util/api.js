@@ -117,7 +117,6 @@ export const createUserWithIdp = body => {
 };
 
 export const checkVoucherApi = code => {
-  console.log('shosllslslsl, ', process.env.REACT_APP_VOUCHER_X_CLIENT_APPLICATION_ID)
   const url = `https://us1.api.voucherify.io/client/v1/validate?code=${code}`;
   const options = {
     method: 'GET',
@@ -132,3 +131,8 @@ export const checkVoucherApi = code => {
     return res.json();
   });
 }
+
+export const rollbackVoucher = transactionId => {
+  console.log('inininin', )
+  return post('/api/rollback-voucher', {transactionId});
+};
