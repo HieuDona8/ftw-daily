@@ -133,6 +133,5 @@ export const checkVoucherApi = code => {
 }
 
 export const rollbackVoucher = transactionId => {
-  console.log('inininin', )
   return post('/api/rollback-voucher', {transactionId});
 };

@@ -48,7 +48,7 @@ export const TRANSITION_CUSTOMER_CANCEL_REFUND = 'transition/customer-cancel-ref
 
 export const TRANSITION_MARK_TRANSACTION_AFTER_48H = 'transition/mark-transaction-after-48H';
 export const TRANSITION_PROVIDER_CANCEL_REFUND_AFTER_48H = 'transition/provider-cancel-refund-after-48H';
-export const TRANSITION_CUSTOMER_CANCEL_NON_REFUND_AFTER_48H = 'transition/customer-cancel-non-refund-after-48H';
+export const TRANSITION_CUSTOMER_CANCEL_NON_REFUND_AFTER_48H = 'transition/customer-cancel-non-refund';
 export const TRANSITION_COMPLETE_AFTER_48H = 'transition/complete-after-48H';
 
 // Reviews are given through transaction transitions. Review 1 can be

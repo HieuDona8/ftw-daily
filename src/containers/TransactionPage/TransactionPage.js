@@ -30,6 +30,7 @@ import { TopbarContainer } from '../../containers';
 import {
   acceptSale,
   declineSale,
+  onCancelSale,
   sendMessage,
   sendReview,
   fetchMoreMessages,
@@ -72,6 +73,7 @@ export const TransactionPageComponent = props => {
     declineSaleError,
     onAcceptSale,
     onDeclineSale,
+    onCancelSale,
     timeSlots,
     fetchTimeSlotsError,
     processTransitions,
@@ -238,6 +240,7 @@ export const TransactionPageComponent = props => {
       transactionRole={transactionRole}
       onAcceptSale={onAcceptSale}
       onDeclineSale={onDeclineSale}
+      onCancelSale={onCancelSale}
       acceptInProgress={acceptInProgress}
       declineInProgress={declineInProgress}
       acceptSaleError={acceptSaleError}
@@ -304,6 +307,7 @@ TransactionPageComponent.propTypes = {
   declineInProgress: bool.isRequired,
   onAcceptSale: func.isRequired,
   onDeclineSale: func.isRequired,
+  onCancelSale: func.isRequired,
   scrollingDisabled: bool.isRequired,
   transaction: propTypes.transaction,
   fetchMessagesError: propTypes.error,
@@ -403,6 +407,7 @@ const mapDispatchToProps = dispatch => {
   return {
     onAcceptSale: transactionId => dispatch(acceptSale(transactionId)),
     onDeclineSale: transactionId => dispatch(declineSale(transactionId)),
+    onCancelSale: (transactionId, type) => dispatch(onCancelSale(transactionId, type)),
     onShowMoreMessages: txId => dispatch(fetchMoreMessages(txId)),
     onSendMessage: (txId, message) => dispatch(sendMessage(txId, message)),
     onManageDisableScrolling: (componentId, disableScrolling) =>
