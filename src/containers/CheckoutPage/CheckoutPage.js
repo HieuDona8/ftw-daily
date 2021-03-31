@@ -115,6 +115,7 @@ export class CheckoutPageComponent extends Component {
     this.loadInitialData = this.loadInitialData.bind(this);
     this.handlePaymentIntent = this.handlePaymentIntent.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.callFetchSpeculatedTransaction = this.callFetchSpeculatedTransaction.bind(this);
     this.handleChangeVoucher = this.handleChangeVoucher.bind(this);
     this.onExitVoucher = this.onExitVoucher.bind(this);
   }
@@ -509,6 +510,28 @@ export class CheckoutPageComponent extends Component {
     }
   }
 
+  callFetchSpeculatedTransaction(voucherCode, isKeepLoading) {
+    const {fetchSpeculatedTransaction} = this.props;
+    const {pageData} = this.state;
+        const storedTx = ensureTransaction(pageData.transaction);
+        const { bookingStart, bookingEnd, bookingDisplayEnd, bookingDisplayStart } = pageData.bookingDates;
+        const currentUserID = pageData.currentUser ? pageData.currentUser.id.uuid : null;
+        const transactionId = storedTx.id;
+    return fetchSpeculatedTransaction(
+      {
+        listingId: pageData.listing.id,
+        bookingStart: dateFromLocalToAPI(bookingStart),
+        bookingEnd: dateFromLocalToAPI(bookingEnd),
+        bookingDisplayEnd,
+        bookingDisplayStart
+      },
+      currentUserID,
+      transactionId,
+      voucherCode,
+      isKeepLoading
+    );
+  }
+
   handleChangeVoucher(voucherCode) {
     const code = voucherCode.trim();
     if(!code || code === '') return;
@@ -524,6 +547,7 @@ export class CheckoutPageComponent extends Component {
             valid
           }
         })
+        this.callFetchSpeculatedTransaction(code, true);
       } else {
         this.setState({
           voucherInfo: {
@@ -533,8 +557,8 @@ export class CheckoutPageComponent extends Component {
             valid
           }
         })
+        this.callFetchSpeculatedTransaction(null, true);
       }
-      
     });
   }
 
@@ -547,6 +571,7 @@ export class CheckoutPageComponent extends Component {
         valid: null
       }
     })
+    this.callFetchSpeculatedTransaction(null, true);
   }
 
   render() {
@@ -860,7 +885,7 @@ export class CheckoutPageComponent extends Component {
                   paymentInfo={intl.formatMessage({ id: 'CheckoutPage.paymentInfo' })}
                   authorDisplayName={currentAuthor.attributes.profile.displayName}
                   showInitialMessageInput={showInitialMessageInput}
-                  initialValues={initalValuesForStripePayment}
+                  initialValues={{...initalValuesForStripePayment, voucher: this.state.voucherInfo.code}}
                   initiateOrderError={initiateOrderError}
                   confirmCardPaymentError={confirmCardPaymentError}
                   confirmPaymentError={confirmPaymentError}
@@ -1006,8 +1031,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
   dispatch,
-  fetchSpeculatedTransaction: (params, currentUserID, transactionId) =>
-    dispatch(speculateTransaction(params, currentUserID, transactionId)),
+  fetchSpeculatedTransaction: (params, currentUserID, transactionId, voucherCode = null, isKeepLoading = false) =>
+    dispatch(speculateTransaction(params, currentUserID, transactionId, voucherCode, isKeepLoading)),
   fetchStripeCustomer: () => dispatch(stripeCustomer()),
   onInitiateOrder: (params, currentUserID, transactionId, voucherCode) => dispatch(initiateOrder(params, currentUserID, transactionId, voucherCode)),
   onRetrievePaymentIntent: params => dispatch(retrievePaymentIntent(params)),

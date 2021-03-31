@@ -297,9 +297,8 @@ export const sendMessage = params => (dispatch, getState, sdk) => {
  * pricing info for the booking breakdown to get a proper estimate for
  * the price with the chosen information.
  */
-export const speculateTransaction = (orderParams, currentUserID, transactionId) => (dispatch, getState, sdk) => {
-  dispatch(speculateTransactionRequest());
-
+export const speculateTransaction = (orderParams, currentUserID, transactionId, voucherCode = null, isKeepLoading = false) => (dispatch, getState, sdk) => {
+  (!voucherCode && !isKeepLoading) && dispatch(speculateTransactionRequest());
   // If we already have a transaction ID, we should transition, not
   // initiate.
   const isTransition = !!transactionId;
@@ -366,7 +365,7 @@ export const speculateTransaction = (orderParams, currentUserID, transactionId) 
       .catch(handleError);
   } else if (isPrivilegedTransition) {
     // initiate privileged
-    return initiatePrivileged({ isSpeculative: true, bookingData, bodyParams, queryParams, currentUserID })
+    return initiatePrivileged({ isSpeculative: true, bookingData, bodyParams, queryParams, currentUserID, voucherCode })
       .then(handleSuccess)
       .catch(handleError);
   } else {

@@ -45,7 +45,7 @@
   "AuthenticationPage.verifyEmailTitle": "{name}, check your inbox to verify your email",
   "Avatar.bannedUserDisplayName": "Banned user",
   "Avatar.deletedUserDisplayName": "Deleted user",
-  "BookingBreakdown.voucher": "Voucher {percent}% up to {price}",
+  "BookingBreakdown.voucher": "Voucher {percent}%",
   "BookingBreakdown.baseUnitDay": "{unitPrice} * {quantity, number} {quantity, plural, one {day} other {days}}",
   "BookingBreakdown.baseUnitNight": "{unitPrice} * {quantity, number} {quantity, plural, one {night} other {nights}}",
   "BookingBreakdown.baseUnitQuantity": "{unitPrice} * {quantity, number} {quantity, plural, one {person} other {persons}}",

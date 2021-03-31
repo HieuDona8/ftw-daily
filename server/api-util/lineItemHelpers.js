@@ -150,14 +150,19 @@ exports.calculateTotalFromLineItems = lineItems => {
   return new Money(numericTotalPrice, unitPrice.currency);
 };
 
-exports.calculateTotalFromItemVoucher = (providerCommission, customerCommission) => {
-
+exports.calculateTotalFromItemVoucher = (booking ,providerCommission, customerCommission, percent_off) => {
   const unitPrice = providerCommission.unitPrice;
-  const totalPrice = (Math.abs(providerCommission.percentage * providerCommission.unitPrice.amount) +
-   Math.abs(customerCommission.percentage * customerCommission.unitPrice.amount)) / 100;
-  const numericTotalPrice = convertDecimalJSToNumber(getAmountAsDecimalJS(new Money(totalPrice, unitPrice)));
+  const maxPriceDiscount = (Math.abs(providerCommission.percentage * providerCommission.unitPrice.amount) +
+    Math.abs(customerCommission.percentage * customerCommission.unitPrice.amount)) / 100;
+  const subTotal = booking.quantity * booking.unitPrice.amount +
+    Math.abs(customerCommission.percentage * customerCommission.unitPrice.amount)/100
+  const totalPrice = Math.min(percent_off*subTotal/100, maxPriceDiscount);
+  const numericTotalPrice = convertDecimalJSToNumber(getAmountAsDecimalJS(new Money(-totalPrice, unitPrice)));
 
-  return new Money(numericTotalPrice, unitPrice.currency);
+  return {
+    maxPriceDiscount: {amount: maxPriceDiscount, currency: unitPrice.currency},
+    unitPrice: new Money(numericTotalPrice, unitPrice.currency)
+  };
 }
 /**
  * Calculates the total sum of lineTotals for given lineItems where `includeFor` includes `provider`

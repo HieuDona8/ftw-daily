@@ -46,42 +46,6 @@ export const BookingBreakdownComponent = props => {
 
   const isCustomer = userRole === 'customer';
   const isProvider = userRole === 'provider';
-
-  if(
-    isCustomer && 
-    voucherInfo &&
-    voucherInfo.valid &&
-    (!transaction.attributes.lineItems[3] || 
-    (transaction.attributes.lineItems[3].percentage.toNumber() !== voucherInfo.percent_off))
-  ){
-    const itemProvider = transaction.attributes.lineItems.find(item => {
-      return item.code === LINE_ITEM_PROVIDER_COMMISSION
-    })
-    const itemCustomer = transaction.attributes.lineItems.find(item => {
-      return item.code === LINE_ITEM_CUSTOMER_COMMISSION
-    })
-    const maxPrice = Math.abs(itemProvider.lineTotal.amount) + Math.abs(itemCustomer.lineTotal.amount);
-    
-    const customerVoucher = {
-      code: LINE_ITEM_CUSTOMER_VOUCHER,
-      unitPrice: new Money(maxPrice, itemCustomer.lineTotal.currency),
-      lineTotal: new Money(-(voucherInfo.percent_off * maxPrice)/100, itemCustomer.lineTotal.currency),
-      percentage: new Decimal(voucherInfo.percent_off),
-      includeFor: ['customer'],
-      reversal: false
-    }
-    
-    transaction.attributes.payinTotal = new Money(transaction.attributes.payinTotal.amount + customerVoucher.lineTotal.amount, customerVoucher.lineTotal.currency);
-    transaction.attributes.lineItems = [
-      ...transaction.attributes.lineItems,
-      customerVoucher
-    ]
-  } else if(voucherInfo && !voucherInfo.valid && transaction.attributes.lineItems[3]){
-    const customerVoucher = transaction.attributes.lineItems[3];
-    transaction.attributes.payinTotal = new Money(transaction.attributes.payinTotal.amount - customerVoucher.lineTotal.amount, customerVoucher.lineTotal.currency);
-    transaction.attributes.lineItems.pop();
-  }
-
   const hasCommissionLineItem = transaction.attributes.lineItems.find(item => {
     const hasCustomerCommission = isCustomer && item.code === LINE_ITEM_CUSTOMER_COMMISSION;
     const hasProviderCommission = isProvider && item.code === LINE_ITEM_PROVIDER_COMMISSION;

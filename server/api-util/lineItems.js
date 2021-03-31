@@ -34,8 +34,7 @@ exports.transactionLineItems = (listing, bookingData, isFirstBooking, voucherDet
 
   //caculator commission customer
   const CUSTOMER_COMMISSION_PERCENTAGE = isFirstBooking ? 15 : 55;
-  
-  const {type, percent_off} = voucherDetail && voucherDetail.voucher.discount || {};
+  const {type, percent_off} = voucherDetail && (voucherDetail.voucher ? voucherDetail.voucher.discount : voucherDetail.discount) || {};
   /**
    * If you want to use pre-defined component and translations for printing the lineItems base price for booking,
    * you should use one of the codes:
@@ -68,10 +67,10 @@ exports.transactionLineItems = (listing, bookingData, isFirstBooking, voucherDet
     isFirstBooking
   }
 
-  const customerVoucher = {
+  const customerVoucher = voucherDetail && {
     code: 'line-item/customer-voucher',
-    unitPrice: calculateTotalFromItemVoucher(providerCommission, customerCommission),
-    percentage: -percent_off,
+    ...calculateTotalFromItemVoucher(booking, providerCommission, customerCommission, percent_off),
+    quantity: 1,
     includeFor: ['customer'],
   }
 

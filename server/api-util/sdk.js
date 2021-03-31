@@ -171,9 +171,13 @@ exports.checkFirstBooking = (arrBooking) => {
 }
 
 exports.redeemVoucher = (voucherCode) => {
-  return client.redemptions.redeem(voucherCode)
+  return client.redemptions.redeem(voucherCode);
+}
+
+exports.validateVoucher = (voucherCode) => {
+  return client.validations.validateVoucher(voucherCode);
 }
 
 exports.rollbackVoucher = (redemptionId) => {
-  return client.redemptions.rollback(redemptionId)
+  return client.redemptions.rollback(redemptionId);
 }
