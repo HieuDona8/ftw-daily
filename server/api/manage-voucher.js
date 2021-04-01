@@ -8,7 +8,16 @@ module.exports = (req, res) => {
     id: transactionUUID
   }).then(transactionRespon => {
     const {redeemId} = transactionRespon.data.data.attributes.protectedData || {};
-    rollbackVoucher(redeemId);
+    const {lastTransition} = transactionRespon.data.data.attributes || {};
+    if([
+      'transition/decline',
+      'transition/provider-cancel-refund',
+      'transition/customer-cancel-refund',
+      'transition/provider-cancel-refund-after-48H',
+      'transition/customer-cancel-non-refund'
+    ].includes(lastTransition)) {
+      rollbackVoucher(redeemId);
+    }
   }).catch(e => {
     handleError(res, e);
   });

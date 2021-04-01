@@ -333,7 +333,9 @@ class StripePaymentForm extends Component {
       defaultPaymentMethod,
       onChangeVoucher,
       voucherInfo,
-      onExitVoucher
+      onRemoveVoucher,
+      inProgressVoucherApply,
+      inProgressVoucherRemove
     } = formRenderProps;
 
     this.finalFormAPI = form;
@@ -394,9 +396,9 @@ class StripePaymentForm extends Component {
       { messageOptionalText: messageOptionalText }
     );
 
-    const exitVoucher = () => {
+    const removeVoucher = () => {
       form.change('voucher', '');
-      return onExitVoucher();
+      return onRemoveVoucher();
     }
 
     // Asking billing address is recommended in PaymentIntent flow.
@@ -480,6 +482,7 @@ class StripePaymentForm extends Component {
               name="voucher"
               label={billingDetailsVoucherLabel}
               placeholder={billingDetailsVoucherPlaceholder}
+              //validate={()=>()=>!voucherInfo.code || voucherInfo.valid}
             />
             {/* <OnBlur name='voucher'>
               {() => exitVoucher()}
@@ -491,6 +494,7 @@ class StripePaymentForm extends Component {
               className={css.btnCheckVoucher}
               disabled={(!values.voucher || values.voucher.trim() === '')}
               onClick={()=> onChangeVoucher(values.voucher)}
+              inProgress={inProgressVoucherApply}
             >
               <FormattedMessage id="StripePaymentForm.checkVoucher" />
             </SecondaryButton>
@@ -499,7 +503,8 @@ class StripePaymentForm extends Component {
               type="button"
               className={css.btnCheckVoucher}
               disabled={(!values.voucher || values.voucher.trim() === '')}
-              onClick={()=> exitVoucher()}
+              onClick={()=> removeVoucher()}
+              inProgress={inProgressVoucherRemove}
             >
               <FormattedMessage id="StripePaymentForm.clearVoucher" />
             </SecondaryButton>
@@ -507,9 +512,13 @@ class StripePaymentForm extends Component {
           
         </div>
         {
-          voucherInfo.code && !voucherInfo.valid &&
+          voucherInfo.code && (!voucherInfo.valid ?
           <div className={css.ValidationError}>
-          <FormattedMessage id="StripePaymentForm.invalidVoucher" /></div>
+            <FormattedMessage id="StripePaymentForm.invalidVoucher" />
+          </div> : 
+          <div className={css.ValidationSuccess}>
+            <FormattedMessage id="StripePaymentForm.validVoucher" />
+          </div>)
         }
         {initiateOrderError ? (
           <span className={css.errorMessage}>{initiateOrderError.message}</span>

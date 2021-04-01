@@ -18,4 +18,4 @@ const checkRollback = () => {
     })
 }
 
-const jobRollbackVoucher = schedule.scheduleJob('* * */2 * * *', checkRollback);
+schedule.scheduleJob('* * */2 * * *', checkRollback);

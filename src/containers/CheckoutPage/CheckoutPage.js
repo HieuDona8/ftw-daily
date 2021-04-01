@@ -102,6 +102,8 @@ export class CheckoutPageComponent extends Component {
       pageData: {},
       dataLoaded: false,
       submitting: false,
+      inProgressVoucherApply: false,
+      inProgressVoucherRemove: false,
       voucherInfo: {
         code: null,
         type: null, 
@@ -117,7 +119,7 @@ export class CheckoutPageComponent extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.callFetchSpeculatedTransaction = this.callFetchSpeculatedTransaction.bind(this);
     this.handleChangeVoucher = this.handleChangeVoucher.bind(this);
-    this.onExitVoucher = this.onExitVoucher.bind(this);
+    this.onRemoveVoucher = this.onRemoveVoucher.bind(this);
   }
 
   componentDidMount() {
@@ -267,9 +269,9 @@ export class CheckoutPageComponent extends Component {
         storedTx.attributes.protectedData && storedTx.attributes.protectedData.stripePaymentIntents;
 
       // If paymentIntent exists, order has been initiated previously.
-      const {code: voucherCode} = this.state.voucherInfo || {};
+      const {code: voucherCode, valid} = this.state.voucherInfo || {};
 
-      return hasPaymentIntents ? Promise.resolve(storedTx) : onInitiateOrder(fnParams, currentUserID, storedTx.id, voucherCode);
+      return hasPaymentIntents ? Promise.resolve(storedTx) : onInitiateOrder(fnParams, currentUserID, storedTx.id, valid===true ? voucherCode : null);
     };
 
     // Step 2: pay using Stripe SDK
@@ -533,45 +535,53 @@ export class CheckoutPageComponent extends Component {
   }
 
   handleChangeVoucher(voucherCode) {
+    this.setState({inProgressVoucherApply: true})
     const code = voucherCode.trim();
     if(!code || code === '') return;
     checkVoucher(code).then(voucher => {
       const valid = voucher.valid;
       if(valid) {
         const {type, percent_off} = voucher.discount || {}
-        this.setState({
-          voucherInfo: {
-            code: code,
-            type, 
-            percent_off,
-            valid
-          }
-        })
-        this.callFetchSpeculatedTransaction(code, true);
+        this.callFetchSpeculatedTransaction(code, true).then(() => {
+          this.setState({
+            inProgressVoucherApply: false,
+            voucherInfo: {
+              code: code,
+              type, 
+              percent_off,
+              valid
+            }
+          })
+        });
       } else {
-        this.setState({
-          voucherInfo: {
-            code: code,
-            type: null, 
-            percent_off: null,
-            valid
-          }
-        })
-        this.callFetchSpeculatedTransaction(null, true);
+        this.callFetchSpeculatedTransaction(null, true).then(() => {
+          this.setState({
+            inProgressVoucherApply: false,
+            voucherInfo: {
+              code: code,
+              type: null, 
+              percent_off: null,
+              valid
+            }
+          })
+        });
       }
     });
   }
 
-  onExitVoucher() {
-    this.setState({
-      voucherInfo: {
-        code: null,
-        type: null, 
-        percent_off: null,
-        valid: null
-      }
-    })
-    this.callFetchSpeculatedTransaction(null, true);
+  onRemoveVoucher() {
+    this.setState({inProgressVoucherRemove: true});
+    this.callFetchSpeculatedTransaction(null, true).then(() => {
+      this.setState({
+        inProgressVoucherRemove: false,
+        voucherInfo: {
+          code: null,
+          type: null, 
+          percent_off: null,
+          valid: null
+        }
+      })
+    });
   }
 
   render() {
@@ -897,8 +907,10 @@ export class CheckoutPageComponent extends Component {
                   paymentIntent={paymentIntent}
                   onStripeInitialized={this.onStripeInitialized}
                   onChangeVoucher={this.handleChangeVoucher}
-                  onExitVoucher={this.onExitVoucher}
+                  onRemoveVoucher={this.onRemoveVoucher}
                   voucherInfo={this.state.voucherInfo}
+                  inProgressVoucherApply={this.state.inProgressVoucherApply}
+                  inProgressVoucherRemove={this.state.inProgressVoucherRemove}
                 />
               ) : null}
               {isPaymentExpired ? (
